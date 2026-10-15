@@ -1,491 +1,2198 @@
+```html
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="ru" class="dark scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rooblox Wiki — Репозиторий и Помощник</title>
+    <title>RBLXOR — Roblox Community Hub</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Inter &Plus Jakarta Sans -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        kitchor: {
+                            bg: '#16181d',
+                            dark: '#111317',
+                            card: '#1f2229',
+                            border: '#2c303a',
+                            gold: '#dfa95b',
+                            goldHover: '#e8b974',
+                            muted: '#9499a3'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        display: ['Plus Jakarta Sans', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
         body {
-            background-color: #111216;
-            color: #e2e8f0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #16181d;
+            color: #f3f4f6;
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
         }
-        .roblox-card {
-            background-color: #1c1e24;
-            border: 1px solid #2d3139;
+
+        /* Архитектурный паттерн в стиле референса KITCHOR */
+        .blueprint-bg {
+            background-color: #16181d;
+            background-image: 
+                linear-gradient(rgba(223, 169, 91, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(223, 169, 91, 0.03) 1px, transparent 1px),
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+            background-size: 100px 100px, 100px 100px, 20px 20px, 20px 20px;
+            background-position: -1px -1px, -1px -1px, -1px -1px, -1px -1px;
         }
-        .roblox-btn {
-            background-color: #00b06f;
-            transition: all 0.2s;
+
+        /* Декоративные скобки вокруг цифр [ 55+ ] */
+        .stat-brackets {
+            position: relative;
+            padding: 1rem 1.75rem;
+            border-top: 2px solid #2c303a;
+            border-bottom: 2px solid #2c303a;
         }
-        .roblox-btn:hover {
-            background-color: #009e63;
+        .stat-brackets::before,
+        .stat-brackets::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 12px;
+            border-color: #dfa95b;
+            border-style: solid;
         }
-        .reaction-btn.active {
-            background-color: #2563eb;
-            border-color: #3b82f6;
-            color: white;
+        .stat-brackets::before {
+            left: 0;
+            border-width: 2px 0 2px 2px;
         }
+        .stat-brackets::after {
+            right: 0;
+            border-width: 2px 2px 2px 0;
+        }
+
         /* Кастомный скроллбар */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #111216; }
-        ::-webkit-scrollbar-thumb { background: #2d3139; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #4b5563; }
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #111317;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2c303a;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #dfa95b;
+        }
+
+        /* Плавное появление вкладок */
+        .tab-section {
+            display: none;
+            animation: fadeIn 0.25s ease-out;
+        }
+        .tab-section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Карточки коллекций как на референсе */
+        .collection-card {
+            position: relative;
+            overflow: hidden;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .collection-card:hover {
+            transform: translateY(-6px);
+        }
+        .collection-card img {
+            transition: transform 0.6s ease;
+        }
+        .collection-card:hover img {
+            transform: scale(1.07);
+        }
     </style>
 </head>
-<body class="min-h-screen flex flex-col">
+<body class="blueprint-bg min-h-screen pb-24 flex flex-col justify-between">
 
-    <!-- Шапка сайта -->
-    <header class="bg-[#191b20] border-b border-[#2d3139] sticky top-0 z-50">
-        <div class="max-w-6xl mx-auto px-4 py-3 flex justify-between items-center">
-            <div class="flex items-center space-x-3">
-                <div class="w-8 h-8 bg-red-600 rounded flex items-center justify-center font-black text-white text-xl transform -rotate-12 shadow">
-                    R
+    <!-- ВЕРХНЯЯ ПАНЕЛЬ В СТИЛЕ KITCHOR -->
+    <header class="sticky top-0 z-40 bg-[#111317]/95 backdrop-blur-md border-b border-kitchor-border">
+        <!-- Тонкая верхняя инфо-полоска -->
+        <div class="hidden md:flex items-center justify-between px-6 py-1.5 text-xs text-kitchor-muted border-b border-white/5 max-w-7xl mx-auto w-full">
+            <div class="flex items-center space-x-4">
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-cube text-kitchor-gold"></i> Официальный фан-хаб сообщества Roblox</span>
+                <span class="text-white/20">|</span>
+                <span class="flex items-center gap-1.5"><i class="fa-solid fa-check-double text-emerald-400"></i> База кодов обновлена</span>
+            </div>
+            <div class="flex items-center space-x-5">
+                <button onclick="switchTab('promos')" class="hover:text-kitchor-gold transition">Все промокоды (<span id="top-promo-count">56</span>)</button>
+                <button onclick="openGuideModal()" class="hover:text-kitchor-gold transition">Как вводить коды?</button>
+                <a href="https://www.roblox.com/redeem" target="_blank" rel="noopener noreferrer" class="text-kitchor-gold hover:underline flex items-center gap-1">
+                    roblox.com/redeem <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                </a>
+            </div>
+        </div>
+
+        <!-- Основная шапка -->
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between gap-3">
+            <!-- Логотип -->
+            <div onclick="switchTab('home')" class="flex items-center gap-3 cursor-pointer group">
+                <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-kitchor-gold to-amber-700 flex items-center justify-center shadow-lg shadow-kitchor-gold/20 group-hover:scale-105 transition">
+                    <i class="fa-solid fa-cubes text-kitchor-dark text-xl"></i>
                 </div>
-                <span class="text-xl font-bold tracking-wider text-white">ROOBLOX <span class="text-red-500">WIKI</span></span>
-                <span class="text-xs bg-[#2d3139] text-gray-300 px-2 py-1 rounded">Репозиторий v2.4</span>
+                <div>
+                    <div class="font-display font-extrabold text-lg tracking-wider text-white flex items-center gap-1.5">
+                        RBLX<span class="text-kitchor-gold">OR</span>
+                    </div>
+                    <div class="text-[10px] uppercase tracking-widest text-kitchor-muted -mt-1">Community Hub</div>
+                </div>
             </div>
 
-            <!-- Блок авторизации -->
-            <div id="auth-section">
-                <button onclick="toggleAuthModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-medium text-sm transition">
-                    Регистрация / Вход
+            <!-- Быстрая навигация для ПК -->
+            <nav class="hidden lg:flex items-center space-x-7 text-xs font-semibold uppercase tracking-wider text-gray-300">
+                <button onclick="switchTab('home')" id="top-nav-home" class="hover:text-kitchor-gold transition text-kitchor-gold">Главная</button>
+                <button onclick="switchTab('promos')" id="top-nav-promos" class="hover:text-kitchor-gold transition">Промокоды</button>
+                <button onclick="switchTab('chat')" id="top-nav-chat" class="hover:text-kitchor-gold transition">Живой Чат</button>
+                <button onclick="switchTab('tools')" id="top-nav-tools" class="hover:text-kitchor-gold transition">Инструменты</button>
+            </nav>
+
+            <!-- Кнопки Войти и Зарегистрироваться / Профиль -->
+            <div id="auth-header-guest" class="flex items-center gap-2 sm:gap-3">
+                <button onclick="openAuthModal('login')" class="px-3.5 py-2 rounded-lg border border-kitchor-border bg-kitchor-card hover:border-kitchor-gold text-xs sm:text-sm font-medium text-white transition flex items-center gap-2">
+                    <i class="fa-solid fa-right-to-bracket text-kitchor-gold"></i>
+                    <span>Войти</span>
+                </button>
+                <button onclick="openAuthModal('register')" class="px-3.5 sm:px-4 py-2 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark text-xs sm:text-sm font-bold transition shadow-md shadow-kitchor-gold/10 flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus"></i>
+                    <span>Зарегистрироваться</span>
+                </button>
+            </div>
+
+            <!-- Блок авторизованного пользователя -->
+            <div id="auth-header-user" class="hidden items-center gap-3">
+                <div onclick="switchTab('chat')" class="flex items-center gap-2.5 px-3 py-1.5 rounded-lg bg-kitchor-card border border-kitchor-border cursor-pointer hover:border-kitchor-gold transition">
+                    <div id="header-user-avatar" class="w-7 h-7 rounded-md bg-kitchor-gold text-kitchor-dark font-bold flex items-center justify-center text-xs">
+                        R
+                    </div>
+                    <div class="text-left">
+                        <div id="header-user-name" class="text-xs font-bold text-white leading-tight">Игрок</div>
+                        <div id="header-user-roblox" class="text-[10px] text-kitchor-gold leading-tight">@roblox</div>
+                    </div>
+                </div>
+                <button onclick="handleLogout()" title="Выйти из аккаунта" class="p-2 rounded-lg bg-kitchor-card border border-kitchor-border hover:border-red-500/60 hover:text-red-400 text-gray-400 transition text-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-power-off"></i>
+                    <span class="hidden sm:inline">Выйти</span>
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- Основной контент -->
-    <main class="max-w-6xl mx-auto px-4 py-8 flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6 w-full">
-        
-        <!-- Левая колонка: Поиск профиля и Помощник -->
-        <div class="space-y-6">
+    <!-- ОСНОВНОЙ КОНТЕНТ -->
+    <main class="flex-grow">
+
+        <!-- ==========================================
+             ВКЛАДКА 1: ГЛАВНОЕ МЕНЮ (В СТИЛЕ KITCHOR)
+             ========================================== -->
+        <section id="tab-home" class="tab-section active">
             
-            <!-- Реальный поиск аккаунта Roblox -->
-            <div class="roblox-card rounded-xl p-5 shadow-lg">
-                <h2 class="text-lg font-bold text-white mb-2 flex items-center gap-2">
-                    <span>🔍</span> Поиск игрока Roblox
-                </h2>
-                <p class="text-xs text-gray-400 mb-4">Введи реальный никнейм из Roblox, чтобы загрузить настоящее фото профиля и данные аккаунта.</p>
+            <!-- HERO СЕКЦИЯ (БЕЗ ФОТО И БЕЗ ИКОНОК — ЧИСТАЯ СОВРЕМЕННАЯ ТИПОГРАФИКА) -->
+            <div class="relative min-h-[480px] lg:min-h-[540px] flex items-center justify-center text-center px-4 overflow-hidden border-b border-kitchor-border bg-gradient-to-b from-[#111317] via-[#16181d] to-[#111317]">
+                <!-- Декоративное мягкое свечение на фоне -->
+                <div class="absolute -top-32 left-1/2 -translate-x-1/2 w-[620px] h-[320px] bg-kitchor-gold/10 blur-[130px] pointer-events-none rounded-full"></div>
+
+                <!-- Контент Hero -->
+                <div class="relative z-10 max-w-3xl mx-auto py-16">
+                    <div class="inline-block px-4 py-1.5 rounded-full bg-white/5 border border-kitchor-gold/30 text-kitchor-gold text-[11px] font-bold uppercase tracking-[0.2em] mb-6">
+                        ВСЕЛЕННАЯ ROBLOX В ОДНОМ МЕСТЕ
+                    </div>
+                    <h1 class="font-display text-3xl sm:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-5 tracking-tight">
+                        Исследуй мир Roblox <br class="hidden sm:inline">с <span class="text-kitchor-gold">экспертами комьюнити</span>
+                    </h1>
+                    <p class="text-sm sm:text-base text-gray-300 max-w-xl mx-auto mb-9 leading-relaxed">
+                        Огромная база проверенных промокодов для официального сайта и лучших игр, удобная фильтрация по режимам, калькулятор Robux и живой чат для реальных игроков.
+                    </p>
+                    <div class="flex flex-wrap items-center justify-center gap-4">
+                        <button onclick="switchTab('promos')" class="px-8 py-3.5 rounded-full bg-kitchor-gold text-kitchor-dark font-extrabold text-xs sm:text-sm uppercase tracking-wider hover:bg-kitchor-goldHover transition shadow-xl shadow-kitchor-gold/10">
+                            Открыть промокоды →
+                        </button>
+                        <button onclick="switchTab('chat')" class="px-8 py-3.5 rounded-full bg-kitchor-card border border-kitchor-border text-white font-semibold text-xs sm:text-sm uppercase tracking-wider hover:border-kitchor-gold hover:text-kitchor-gold transition">
+                            Перейти в чат
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- СЕКЦИЯ "О НАС / ОПЫТ" -->
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 lg:py-20">
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                    <!-- Левый блок со скобками -->
+                    <div class="lg:col-span-4 flex justify-center lg:justify-start">
+                        <div class="stat-brackets inline-flex items-center gap-4 bg-kitchor-card/60 rounded-lg">
+                            <span id="home-stat-codes" class="font-display text-5xl sm:text-6xl font-extrabold text-kitchor-gold">56</span>
+                            <div class="text-xs sm:text-sm text-gray-300 font-medium leading-snug">
+                                Проверенных<br>промокодов<br>и наград в базе
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Средний блок с заголовком -->
+                    <div class="lg:col-span-4 text-center lg:text-left">
+                        <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-2">О ПРОЕКТЕ RBLXOR</div>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold text-white leading-snug">
+                            Удобные решения для каждого игрока Roblox
+                        </h2>
+                    </div>
+
+                    <!-- Правый блок с текстом и кнопкой -->
+                    <div class="lg:col-span-4 text-center lg:text-left">
+                        <p class="text-sm text-kitchor-muted leading-relaxed mb-5">
+                            Мы собрали промокоды как на эксклюзивные вещи для аватара с сайта <span class="text-gray-200">roblox.com/redeem</span>, так и внутренние коды для популярных плейсов: Murder Mystery 2, Blox Fruits, DOORS, Blade Ball и других.
+                        </p>
+                        <button onclick="switchTab('promos')" class="inline-block px-6 py-2.5 rounded-full bg-kitchor-card border border-kitchor-border hover:border-kitchor-gold text-xs font-semibold uppercase tracking-wider text-white transition">
+                            Смотреть всю базу →
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- СОВРЕМЕННЫЕ ТИПОГРАФИЧЕСКИЕ КАРТОЧКИ ИГР (БЕЗ ФОТО И БЕЗ ИКОНОК) -->
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 pb-20">
+                <div class="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
+                    <div>
+                        <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-1">КАТАЛОГ РЕЖИМОВ И РАЗДЕЛОВ</div>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-white">Murder Mystery 2 и популярные игры</h3>
+                    </div>
+                    <button onclick="switchTab('promos')" class="text-xs font-semibold uppercase tracking-wider text-kitchor-gold hover:underline">
+                        Все категории кодов →
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    <!-- Карточка 1: Murder Mystery 2 -->
+                    <div onclick="openCategoryFromHome('Murder Mystery 2 (MM2)')" class="collection-card rounded-2xl min-h-[300px] p-7 bg-gradient-to-b from-[#232730] via-[#1b1e25] to-[#13151a] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-6">
+                                <span>РАЗДЕЛ 01</span>
+                                <span>MM2</span>
+                            </div>
+                            <h4 class="font-display text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Murder Mystery 2
+                            </h4>
+                            <div class="w-10 h-0.5 bg-kitchor-gold/60 my-4"></div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Промокоды на эксклюзивные ножи, редкое оружие и коллекционные предметы для твоего инвентаря в MM2.
+                            </p>
+                        </div>
+                        <div class="pt-6 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Открыть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 2: Blox Fruits -->
+                    <div onclick="openCategoryFromHome('Blox Fruits')" class="collection-card rounded-2xl min-h-[300px] p-7 bg-gradient-to-b from-[#232730] via-[#1b1e25] to-[#13151a] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-6">
+                                <span>РАЗДЕЛ 02</span>
+                                <span>ANIME RPG</span>
+                            </div>
+                            <h4 class="font-display text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Blox Fruits
+                            </h4>
+                            <div class="w-10 h-0.5 bg-kitchor-gold/60 my-4"></div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Двойной опыт (2x EXP) на несколько часов, бесплатный сброс характеристик (Stat Reset), деньги Beli и титулы.
+                            </p>
+                        </div>
+                        <div class="pt-6 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Открыть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 3: DOORS -->
+                    <div onclick="openCategoryFromHome('DOORS')" class="collection-card rounded-2xl min-h-[300px] p-7 bg-gradient-to-b from-[#232730] via-[#1b1e25] to-[#13151a] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-6">
+                                <span>РАЗДЕЛ 03</span>
+                                <span>HORROR</span>
+                            </div>
+                            <h4 class="font-display text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                DOORS
+                            </h4>
+                            <div class="w-10 h-0.5 bg-kitchor-gold/60 my-4"></div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Бесплатные ручки (Knobs), возрождения (Revives) и звёздная пыль для прохождения сложных этажей отеля и шахт.
+                            </p>
+                        </div>
+                        <div class="pt-6 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Открыть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 4: Официальный сайт Roblox -->
+                    <div onclick="openCategoryFromHome('official')" class="collection-card rounded-2xl min-h-[300px] p-7 bg-gradient-to-b from-[#232730] via-[#1b1e25] to-[#13151a] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-6">
+                                <span>РАЗДЕЛ 04</span>
+                                <span>ROBLOX SITE</span>
+                            </div>
+                            <h4 class="font-display text-2xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Предметы Roblox
+                            </h4>
+                            <div class="w-10 h-0.5 bg-kitchor-gold/60 my-4"></div>
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Промокоды для ввода на официальном сайте roblox.com/redeem и в официальных ивентах на вещи для аватара.
+                            </p>
+                        </div>
+                        <div class="pt-6 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Открыть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 5: Blade Ball -->
+                    <div onclick="openCategoryFromHome('Blade Ball')" class="collection-card rounded-2xl min-h-[260px] p-7 bg-gradient-to-b from-[#1f2229] to-[#14161b] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-5">
+                                <span>РАЗДЕЛ 05</span>
+                                <span>ACTION</span>
+                            </div>
+                            <h4 class="font-display text-xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Blade Ball
+                            </h4>
+                            <p class="text-xs text-gray-300 leading-relaxed mt-3">
+                                Скины на мечи, бесплатные ракушки (Shells), билеты возрождения и вращения колеса.
+                            </p>
+                        </div>
+                        <div class="pt-5 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Смотреть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 6: Bee Swarm Simulator -->
+                    <div onclick="openCategoryFromHome('Bee Swarm Simulator')" class="collection-card rounded-2xl min-h-[260px] p-7 bg-gradient-to-b from-[#1f2229] to-[#14161b] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-5">
+                                <span>РАЗДЕЛ 06</span>
+                                <span>SIMULATOR</span>
+                            </div>
+                            <h4 class="font-display text-xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Bee Swarm Simulator
+                            </h4>
+                            <p class="text-xs text-gray-300 leading-relaxed mt-3">
+                                Билеты (Tickets), тысячи единиц мёда, магические бобы и мощные бусты цветочных полей.
+                            </p>
+                        </div>
+                        <div class="pt-5 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Смотреть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 7: Dress To Impress -->
+                    <div onclick="openCategoryFromHome('Dress To Impress (DTI)')" class="collection-card rounded-2xl min-h-[260px] p-7 bg-gradient-to-b from-[#1f2229] to-[#14161b] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-5">
+                                <span>РАЗДЕЛ 07</span>
+                                <span>FASHION</span>
+                            </div>
+                            <h4 class="font-display text-xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Dress To Impress
+                            </h4>
+                            <p class="text-xs text-gray-300 leading-relaxed mt-3">
+                                Эксклюзивные платья, короны, куртки и стильные аксессуары для побед на модном подиуме.
+                            </p>
+                        </div>
+                        <div class="pt-5 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Смотреть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+
+                    <!-- Карточка 8: Brookhaven RP -->
+                    <div onclick="openCategoryFromHome('Brookhaven RP')" class="collection-card rounded-2xl min-h-[260px] p-7 bg-gradient-to-b from-[#1f2229] to-[#14161b] border border-kitchor-border hover:border-kitchor-gold cursor-pointer flex flex-col justify-between group">
+                        <div>
+                            <div class="flex items-center justify-between text-[11px] font-mono uppercase tracking-widest text-kitchor-gold mb-5">
+                                <span>РАЗДЕЛ 08</span>
+                                <span>ROLEPLAY</span>
+                            </div>
+                            <h4 class="font-display text-xl font-extrabold text-white tracking-tight leading-snug group-hover:text-kitchor-gold transition">
+                                Brookhaven RP
+                            </h4>
+                            <p class="text-xs text-gray-300 leading-relaxed mt-3">
+                                Рабочие ID популярных музыкальных треков для автомобилей и домов в Brookhaven RP.
+                            </p>
+                        </div>
+                        <div class="pt-5 border-t border-white/5 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-white group-hover:text-kitchor-gold transition">
+                            <span>Смотреть коды</span>
+                            <span>→</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- СЕКЦИЯ "ПОЧЕМУ ВЫБИРАЮТ НАС" (ЧИСТАЯ ТИПОГРАФИКА С НОМЕРАМИ 01-04 БЕЗ ИКОНОК) -->
+            <div class="bg-[#121418] border-y border-kitchor-border py-16 lg:py-20">
+                <div class="max-w-6xl mx-auto px-4 sm:px-6">
+                    <div class="max-w-xl mb-12">
+                        <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-2">ПРЕИМУЩЕСТВА ПЛАТФОРМЫ</div>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold text-white">
+                            Высокий стандарт качества для игроков Roblox
+                        </h2>
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div class="bg-kitchor-card/60 border border-kitchor-border rounded-2xl p-6 hover:border-kitchor-gold/60 transition">
+                            <div class="font-display text-2xl font-extrabold text-kitchor-gold mb-4">01</div>
+                            <h4 class="font-display font-bold text-white text-base mb-2">Умный фильтр игр</h4>
+                            <p class="text-xs text-kitchor-muted leading-relaxed">
+                                Сразу видно, где именно нужно вводить промокод: на официальном сайте Roblox или внутри конкретного режима.
+                            </p>
+                        </div>
+
+                        <div class="bg-kitchor-card/60 border border-kitchor-border rounded-2xl p-6 hover:border-kitchor-gold/60 transition">
+                            <div class="font-display text-2xl font-extrabold text-kitchor-gold mb-4">02</div>
+                            <h4 class="font-display font-bold text-white text-base mb-2">Чат без ботов</h4>
+                            <p class="text-xs text-kitchor-muted leading-relaxed">
+                                Никаких фейковых сообщений или автоответчиков. В чате отображаются только сообщения зарегистрированных людей.
+                            </p>
+                        </div>
+
+                        <div class="bg-kitchor-card/60 border border-kitchor-border rounded-2xl p-6 hover:border-kitchor-gold/60 transition">
+                            <div class="font-display text-2xl font-extrabold text-kitchor-gold mb-4">03</div>
+                            <h4 class="font-display font-bold text-white text-base mb-2">Копирование в 1 клик</h4>
+                            <p class="text-xs text-kitchor-muted leading-relaxed">
+                                Копируй любой промокод одной кнопкой и отмечай уже активированные коды, чтобы не вводить их повторно.
+                            </p>
+                        </div>
+
+                        <div class="bg-kitchor-card/60 border border-kitchor-border rounded-2xl p-6 hover:border-kitchor-gold/60 transition">
+                            <div class="font-display text-2xl font-extrabold text-kitchor-gold mb-4">04</div>
+                            <h4 class="font-display font-bold text-white text-base mb-2">Калькулятор и гайды</h4>
+                            <p class="text-xs text-kitchor-muted leading-relaxed">
+                                Мгновенно рассчитывай комиссию 30% в Robux для геймпассов и открывай инструкции по вводу кодов.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ПРОМО-БАННЕР С ИНСТРУКЦИЕЙ (БЕЗ ИКОНОК И КАРТИНОК) -->
+            <div class="max-w-6xl mx-auto px-4 sm:px-6 py-16 lg:py-20">
+                <div class="rounded-2xl overflow-hidden bg-kitchor-card border border-kitchor-border grid grid-cols-1 lg:grid-cols-12">
+                    <div class="lg:col-span-6 p-8 sm:p-12 flex flex-col justify-center">
+                        <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-2">ПОШАГОВЫЙ ГАЙД</div>
+                        <h3 class="font-display text-2xl sm:text-3xl font-bold text-white mb-4 leading-snug">
+                            Как правильно активировать промокоды на сайте и в играх
+                        </h3>
+                        <p class="text-xs sm:text-sm text-kitchor-muted leading-relaxed mb-6">
+                            Многие игроки путают коды для сайта <span class="text-white">roblox.com/redeem</span> и коды для режимов вроде Murder Mystery 2, Blox Fruits или Island of Move. Мы подготовили наглядную шпаргалку.
+                        </p>
+                        <div>
+                            <button onclick="openGuideModal()" class="px-7 py-3 rounded-full bg-white text-kitchor-dark font-bold text-xs uppercase tracking-wider hover:bg-kitchor-gold transition">
+                                Открыть инструкцию →
+                            </button>
+                        </div>
+                    </div>
+                    <div class="lg:col-span-6 relative min-h-[260px] bg-[#111317] flex items-center justify-center p-6">
+                        <div class="w-full max-w-md rounded-xl bg-kitchor-bg border border-kitchor-border p-6 shadow-2xl">
+                            <div class="flex items-center justify-between border-b border-kitchor-border pb-3 mb-4">
+                                <span class="text-[11px] font-bold uppercase tracking-wider text-kitchor-gold">Форма активации</span>
+                                <span class="text-[11px] font-mono text-kitchor-muted">roblox.com/redeem</span>
+                            </div>
+                            <div class="space-y-3">
+                                <div class="text-xs text-gray-300 font-semibold">Введите ваш промокод:</div>
+                                <div class="flex gap-2">
+                                    <div class="flex-grow px-3.5 py-2.5 rounded bg-[#111317] border border-kitchor-gold/50 font-mono text-sm font-bold text-kitchor-gold">
+                                        COMB4T2
+                                    </div>
+                                    <button onclick="switchTab('promos')" class="px-5 py-2.5 rounded bg-kitchor-gold text-kitchor-dark font-bold text-xs uppercase">
+                                        Redeem
+                                    </button>
+                                </div>
+                                <div class="text-[11px] text-emerald-400 pt-1 font-medium">
+                                    Награда мгновенно появляется в твоём инвентаре!
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- СЧЕТЧИКИ ДОСТИЖЕНИЙ ВНИЗУ -->
+            <div class="border-t border-kitchor-border bg-[#111317] py-12">
+                <div class="max-w-5xl mx-auto px-4 sm:px-6 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+                    <div>
+                        <div class="font-display text-3xl sm:text-4xl font-extrabold text-kitchor-gold mb-1">56</div>
+                        <div class="text-xs text-gray-400 uppercase tracking-wider">Активных промокодов</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-3xl sm:text-4xl font-extrabold text-kitchor-gold mb-1">10+</div>
+                        <div class="text-xs text-gray-400 uppercase tracking-wider">Популярных режимов</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-3xl sm:text-4xl font-extrabold text-kitchor-gold mb-1">0</div>
+                        <div class="text-xs text-gray-400 uppercase tracking-wider">Ботов в чате</div>
+                    </div>
+                    <div>
+                        <div class="font-display text-3xl sm:text-4xl font-extrabold text-kitchor-gold mb-1">100%</div>
+                        <div class="text-xs text-gray-400 uppercase tracking-wider">Бесплатный доступ</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ФИНАЛЬНЫЙ БАННЕР ПРИЗЫВА К ДЕЙСТВИЮ -->
+            <div class="relative py-16 px-4 text-center border-t border-kitchor-border bg-gradient-to-b from-[#16181d] to-[#111317]">
+                <div class="max-w-2xl mx-auto">
+                    <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-2">ПРИСОЕДИНЯЙСЯ К СООБЩЕСТВУ</div>
+                    <h2 class="font-display text-2xl sm:text-4xl font-bold text-white mb-4">
+                        Создай аккаунт и общайся с игроками Roblox
+                    </h2>
+                    <p class="text-xs sm:text-sm text-kitchor-muted mb-7">
+                        Регистрация занимает 10 секунд. Делись своими находками, ищи друзей для игры и сохраняй использованные промокоды.
+                    </p>
+                    <div class="flex flex-wrap justify-center gap-3">
+                        <button onclick="openAuthModal('register')" class="px-7 py-3.5 rounded-full bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs uppercase tracking-wider transition shadow-lg">
+                            Зарегистрироваться сейчас
+                        </button>
+                        <button onclick="openAuthModal('login')" class="px-7 py-3.5 rounded-full bg-kitchor-card border border-kitchor-border hover:border-kitchor-gold text-white font-semibold text-xs uppercase tracking-wider transition">
+                            Войти в аккаунт
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- ==========================================
+             ВКЛАДКА 2: ПРОМОКОДЫ И ФИЛЬТРЫ ПО ИГРАМ
+             ========================================== -->
+        <section id="tab-promos" class="tab-section max-w-7xl mx-auto px-4 sm:px-6 py-8">
+            
+            <!-- Заголовок страницы промокодов -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-6 border-b border-kitchor-border">
+                <div>
+                    <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-1">БАЗА ПРОМОКОДОВ ROBLOX</div>
+                    <h1 class="font-display text-2xl sm:text-4xl font-extrabold text-white">Промокоды на предметы и игры</h1>
+                    <p class="text-xs sm:text-sm text-kitchor-muted mt-1">
+                        Используй фильтр ниже, чтобы выбрать: коды для официального сайта Roblox, для ивентов или для конкретной популярной игры.
+                    </p>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="https://www.roblox.com/redeem" target="_blank" rel="noopener noreferrer" 
+                       class="px-4 py-2.5 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs flex items-center gap-2 transition shadow">
+                        <i class="fa-solid fa-up-right-from-square"></i>
+                        <span>Сайт roblox.com/redeem</span>
+                    </a>
+                    <button onclick="openGuideModal()" class="px-3.5 py-2.5 rounded-lg bg-kitchor-card border border-kitchor-border hover:border-kitchor-gold text-xs font-medium text-white transition flex items-center gap-1.5">
+                        <i class="fa-regular fa-circle-question text-kitchor-gold"></i>
+                        <span>Где вводить?</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ПАНЕЛЬ ФИЛЬТРАЦИИ И ПОИСКА -->
+            <div class="bg-kitchor-card border border-kitchor-border rounded-xl p-4 sm:p-5 my-6 space-y-4">
                 
-                <div class="flex gap-2 mb-4">
-                    <input type="text" id="roblox-username" placeholder="Например: Roblox, Builderman..." 
-                        class="w-full bg-[#111216] border border-[#2d3139] rounded px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
-                    <button onclick="searchRobloxUser()" id="search-btn" class="roblox-btn text-white px-4 py-2 rounded font-bold text-sm shrink-0">
-                        Найти
-                    </button>
-                </div>
+                <!-- Верхний ряд: Поиск + Фильтр места ввода + Скрытие использованных -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3">
+                    <!-- Поиск -->
+                    <div class="md:col-span-5 relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                        <input type="text" id="promo-search" oninput="renderPromoCodes()" 
+                               placeholder="Поиск по коду, игре или награде (например: 2x EXP, кот, меч)..." 
+                               class="w-full pl-9 pr-4 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-xs sm:text-sm text-white">
+                    </div>
 
-                <!-- Результат поиска -->
-                <div id="profile-result" class="hidden bg-[#111216] p-4 rounded-lg border border-[#2d3139] text-center">
-                    <img id="profile-avatar" src="" alt="Avatar" class="w-28 h-28 mx-auto rounded-full bg-[#1c1e24] border-2 border-[#00b06f] mb-3 object-cover">
-                    <h3 id="profile-displayname" class="font-bold text-white text-lg"></h3>
-                    <p id="profile-username" class="text-gray-400 text-sm mb-2"></p>
-                    <span id="profile-id" class="text-xs bg-[#2d3139] text-gray-300 px-2 py-1 rounded"></span>
-                </div>
-                <div id="profile-error" class="hidden text-red-400 text-xs text-center mt-2"></div>
-            </div>
+                    <!-- Фильтр: ГДЕ ВВОДИТЬ -->
+                    <div class="md:col-span-4">
+                        <select id="promo-where-filter" onchange="renderPromoCodes()" 
+                                class="w-full px-3.5 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-xs sm:text-sm text-white">
+                            <option value="all">📍 Где вводить: Все способы</option>
+                            <option value="site">🌐 Только на сайте roblox.com/redeem</option>
+                            <option value="roblox-event">🎁 Официальные хабы Roblox (Вещи в инвентарь)</option>
+                            <option value="ingame">🎮 Внутри популярных режимов (Бонусы в играх)</option>
+                        </select>
+                    </div>
 
-            <!-- Виджет Помощника Wiki -->
-            <div class="roblox-card rounded-xl p-5 shadow-lg border-l-4 border-l-blue-500">
-                <div class="flex items-center gap-3 mb-3">
-                    <div class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-xl">🤖</div>
-                    <div>
-                        <h3 class="font-bold text-white text-sm">Помощник Rooblox Wiki</h3>
-                        <span class="text-xs text-green-400">● В сети</span>
+                    <!-- Чекбокс: Скрыть использованные -->
+                    <div class="md:col-span-3 flex items-center justify-between md:justify-end gap-3 px-2">
+                        <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-gray-300">
+                            <input type="checkbox" id="hide-used-checkbox" onchange="renderPromoCodes()" class="rounded border-kitchor-border bg-[#111317] text-kitchor-gold focus:ring-0">
+                            <span>Скрыть использованные (<span id="used-count-badge">0</span>)</span>
+                        </label>
                     </div>
                 </div>
-                <p id="helper-text" class="text-sm text-gray-300 bg-[#111216] p-3 rounded border border-[#2d3139] mb-3">
-                    Привет! Я бот-помощник этого репозитория. Здесь собраны все проверенные промокоды. Нажми на вопрос ниже, если нужна помощь!
-                </p>
-                <div class="space-y-2 text-xs">
-                    <button onclick="askHelper(1)" class="w-full text-left bg-[#252830] hover:bg-[#2d3139] p-2 rounded transition text-blue-300">
-                        ❓ Куда вводить эти промокоды?
-                    </button>
-                    <button onclick="askHelper(2)" class="w-full text-left bg-[#252830] hover:bg-[#2d3139] p-2 rounded transition text-blue-300">
-                        ❓ Как работает поиск профиля?
-                    </button>
-                    <button onclick="askHelper(3)" class="w-full text-left bg-[#252830] hover:bg-[#2d3139] p-2 rounded transition text-blue-300">
-                        ❓ Почему комментарии «мёртвые»?
-                    </button>
+
+                <!-- Кнопки выбора конкретной игры -->
+                <div>
+                    <div class="text-[11px] uppercase tracking-wider text-kitchor-muted font-semibold mb-2.5 flex items-center gap-1.5">
+                        <i class="fa-solid fa-gamepad text-kitchor-gold"></i> Выбери игру или раздел:
+                    </div>
+                    <div id="game-filter-chips" class="flex flex-wrap gap-2">
+                        <!-- Генерируется через JS -->
+                    </div>
                 </div>
             </div>
 
-        </div>
+            <!-- Инфо-строка результатов -->
+            <div class="flex items-center justify-between mb-4 text-xs text-kitchor-muted px-1">
+                <div>Показано промокодов: <span id="shown-promo-count" class="text-white font-bold">0</span></div>
+                <button onclick="resetPromoFilters()" class="text-kitchor-gold hover:underline">Сбросить фильтры</button>
+            </div>
 
-        <!-- Правая колонка (2/3 ширины): Промокоды и Комментарии -->
-        <div class="lg:col-span-2 space-y-6">
+            <!-- СЕТКА КАРТОЧЕК ПРОМОКОДОВ -->
+            <div id="promo-cards-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Генерируется через JS -->
+            </div>
+
+        </section>
+
+        <!-- ==========================================
+             ВКЛАДКА 3: ЖИВОЙ ЧАТ ИГРОКОВ (БЕЗ БОТОВ)
+             ========================================== -->
+        <section id="tab-chat" class="tab-section max-w-6xl mx-auto px-4 sm:px-6 py-8">
             
-            <!-- Секция Промокодов -->
-            <div class="roblox-card rounded-xl p-6 shadow-lg">
-                <div class="flex flex-wrap justify-between items-center mb-4 gap-2">
-                    <div>
-                        <h1 class="text-2xl font-bold text-white flex items-center gap-2">
-                            База промокодов <span class="text-xs bg-red-600 text-white px-2 py-1 rounded uppercase">Rooblox Wiki</span>
-                        </h1>
-                        <p class="text-xs text-gray-400 mt-1">Проверено модераторами репозитория. Коды обновляются автоматически.</p>
+            <!-- Шапка чата -->
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-kitchor-border">
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+                        <span class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold">ЖИВОЕ ОБЩЕНИЕ БЕЗ БОТОВ</span>
                     </div>
-                    <div class="flex gap-2 text-xs">
-                        <button onclick="filterCodes('all')" class="bg-[#2d3139] hover:bg-gray-600 px-3 py-1.5 rounded text-white">Все</button>
-                        <button onclick="filterCodes('working')" class="bg-green-900/50 border border-green-600 text-green-300 px-3 py-1.5 rounded">Рабочие</button>
-                        <button onclick="filterCodes('expired')" class="bg-red-900/50 border border-red-600 text-red-300 px-3 py-1.5 rounded">Истёкшие</button>
-                    </div>
+                    <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-white mt-1">Чат сообщества Roblox</h1>
+                    <p class="text-xs text-kitchor-muted mt-0.5">
+                        Здесь отображаются только сообщения реальных зарегистрированных игроков.
+                    </p>
                 </div>
 
-                <!-- Список кодов -->
-                <div id="codes-container" class="space-y-3">
-                    <!-- Заполняется через JS -->
+                <!-- Статус синхронизации -->
+                <div class="flex items-center gap-2 self-start sm:self-auto">
+                    <span id="chat-connection-badge" class="px-3 py-1.5 rounded-lg bg-kitchor-card border border-kitchor-border text-xs text-gray-300 flex items-center gap-2">
+                        <i class="fa-solid fa-database text-kitchor-gold"></i>
+                        <span id="chat-mode-text">Режим реального времени</span>
+                    </span>
                 </div>
             </div>
 
-            <!-- Секция Комментариев -->
-            <div class="roblox-card rounded-xl p-6 shadow-lg">
-                <div class="flex justify-between items-center mb-4">
-                    <h2 class="text-xl font-bold text-white">Архив комментариев (<span id="comments-count">0</span>)</h2>
-                    <span class="text-xs text-gray-400">Старые обсуждения пользователей</span>
+            <!-- Основной контейнер чата -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 mt-6">
+                
+                <!-- Левая колонка: Каналы и профиль пользователя -->
+                <div class="lg:col-span-4 space-y-4">
+                    <!-- Выбор канала -->
+                    <div class="bg-kitchor-card border border-kitchor-border rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase tracking-wider text-kitchor-muted mb-3">Каналы чата</div>
+                        <div class="space-y-1.5" id="chat-channels-list">
+                            <button onclick="selectChatChannel('general')" data-channel="general" class="chat-channel-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-kitchor-gold text-kitchor-dark font-bold text-xs transition">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-hashtag"></i> Общий чат</span>
+                                <span class="text-[10px] opacity-80">Все темы</span>
+                            </button>
+                            <button onclick="selectChatChannel('teammates')" data-channel="teammates" class="chat-channel-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-gray-300 font-medium text-xs transition">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-user-group text-kitchor-gold"></i> Поиск тиммейтов</span>
+                                <span class="text-[10px] text-kitchor-muted">Игры вместе</span>
+                            </button>
+                            <button onclick="selectChatChannel('trades')" data-channel="trades" class="chat-channel-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-gray-300 font-medium text-xs transition">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-Arrow-right-arrow-left text-kitchor-gold"></i> Обмен / Трейды</span>
+                                <span class="text-[10px] text-kitchor-muted">Blox Fruits, MM2, Adopt Me</span>
+                            </button>
+                            <button onclick="selectChatChannel('promos')" data-channel="promos" class="chat-channel-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-gray-300 font-medium text-xs transition">
+                                <span class="flex items-center gap-2"><i class="fa-solid fa-ticket text-kitchor-gold"></i> Новые промокоды</span>
+                                <span class="text-[10px] text-kitchor-muted">Помощь с кодами</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Карточка аккаунта в чате -->
+                    <div class="bg-kitchor-card border border-kitchor-border rounded-xl p-4">
+                        <div class="text-xs font-bold uppercase tracking-wider text-kitchor-muted mb-3">Твой профиль</div>
+                        
+                        <!-- Если не вошел -->
+                        <div id="chat-sidebar-guest" class="space-y-3">
+                            <p class="text-xs text-gray-300 leading-relaxed">
+                                Чтобы писать сообщения в чат, войди в существующий аккаунт или создай новый.
+                            </p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <button onclick="openAuthModal('login')" class="py-2.5 px-3 rounded-lg bg-[#111317] border border-kitchor-border hover:border-kitchor-gold text-white font-semibold text-xs transition">
+                                    Войти
+                                </button>
+                                <button onclick="openAuthModal('register')" class="py-2.5 px-3 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs transition">
+                                    Регистрация
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Если вошел -->
+                        <div id="chat-sidebar-user" class="hidden space-y-3">
+                            <div class="flex items-center gap-3">
+                                <div id="chat-user-avatar" class="w-11 h-11 rounded-lg bg-kitchor-gold text-kitchor-dark font-extrabold flex items-center justify-center text-base">
+                                    U
+                                </div>
+                                <div>
+                                    <div id="chat-user-name" class="text-sm font-bold text-white">Никнейм</div>
+                                    <div id="chat-user-roblox" class="text-xs text-kitchor-gold">Roblox: @player</div>
+                                </div>
+                            </div>
+                            <div class="pt-2 border-t border-kitchor-border flex items-center justify-between text-[11px] text-kitchor-muted">
+                                <span>Статус: <strong class="text-emerald-400">Авторизован</strong></span>
+                                <button onclick="handleLogout()" class="text-red-400 hover:underline">Выйти</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
-                <!-- Форма добавления комментария -->
-                <div class="mb-6 bg-[#111216] p-4 rounded-lg border border-[#2d3139]">
-                    <div id="comment-auth-warning" class="text-sm text-yellow-400 mb-2">
-                        ⚠️ Чтобы оставить комментарий, пожалуйста, <button onclick="toggleAuthModal()" class="underline font-bold">зарегистрируйся</button>.
+                <!-- Правая колонка: Окно сообщений и форма отправки -->
+                <div class="lg:col-span-8 flex flex-col bg-kitchor-card border border-kitchor-border rounded-xl overflow-hidden h-[540px]">
+                    
+                    <!-- Заголовок активного канала -->
+                    <div class="px-5 py-3.5 bg-[#111317] border-b border-kitchor-border flex items-center justify-between">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-hashtag text-kitchor-gold"></i>
+                            <span id="active-channel-title" class="font-display font-bold text-sm text-white">Общий чат</span>
+                        </div>
+                        <span id="chat-messages-count" class="text-[11px] text-kitchor-muted">0 сообщений</span>
                     </div>
-                    <div id="comment-form" class="hidden">
-                        <textarea id="new-comment-text" rows="2" placeholder="Напиши свой комментарий в репозиторий..." 
-                            class="w-full bg-[#1c1e24] border border-[#2d3139] rounded p-2 text-sm text-white focus:outline-none focus:border-blue-500 mb-2"></textarea>
-                        <button onclick="addComment()" class="roblox-btn text-white px-4 py-1.5 rounded text-sm font-bold">Отправить</button>
+
+                    <!-- Список сообщений -->
+                    <div id="chat-messages-container" class="flex-grow p-4 sm:p-5 overflow-y-auto space-y-3.5">
+                        <!-- Сообщения рендерятся через JS (без ботов!) -->
                     </div>
+
+                    <!-- Нижняя панель отправки сообщения -->
+                    <div class="p-3.5 bg-[#111317] border-t border-kitchor-border">
+                        
+                        <!-- Заглушка для гостей с двумя кнопками: Войти и Зарегистрироваться -->
+                        <div id="chat-input-guest" class="flex flex-col sm:flex-row items-center justify-between gap-3 py-1 px-2">
+                            <div class="text-xs text-gray-300 flex items-center gap-2">
+                                <i class="fa-solid fa-lock text-kitchor-gold"></i>
+                                <span>Отправка сообщений доступна после входа в аккаунт</span>
+                            </div>
+                            <div class="flex items-center gap-2 w-full sm:w-auto">
+                                <button onclick="openAuthModal('login')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-kitchor-card border border-kitchor-border hover:border-kitchor-gold text-white text-xs font-semibold transition">
+                                    Войти
+                                </button>
+                                <button onclick="openAuthModal('register')" class="flex-1 sm:flex-initial px-4 py-2 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark text-xs font-bold transition">
+                                    Зарегистрироваться
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Поле ввода для авторизованного игрока -->
+                        <form id="chat-input-form" onsubmit="sendChatMessage(event)" class="hidden flex items-center gap-2.5">
+                            <input type="text" id="chat-message-input" maxlength="400" required
+                                   placeholder="Напиши сообщение в чат..." 
+                                   class="flex-grow px-4 py-2.5 rounded-lg bg-kitchor-card border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-xs sm:text-sm text-white">
+                            <button type="submit" class="px-5 py-2.5 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs sm:text-sm transition flex items-center gap-2 shrink-0">
+                                <span>Отправить</span>
+                                <i class="fa-solid fa-paper-plane"></i>
+                            </button>
+                        </form>
+                    </div>
+
                 </div>
 
-                <!-- Список комментариев -->
-                <div id="comments-list" class="space-y-4 max-h-[500px] overflow-y-auto pr-2">
-                    <!-- Заполняется через JS -->
-                </div>
+            </div>
+        </section>
+
+        <!-- ==========================================
+             ВКЛАДКА 4: ИНСТРУМЕНТЫ ROBLOX
+             ========================================== -->
+        <section id="tab-tools" class="tab-section max-w-6xl mx-auto px-4 sm:px-6 py-8">
+            <div class="pb-6 border-b border-kitchor-border mb-8">
+                <div class="text-xs uppercase tracking-widest text-kitchor-gold font-semibold mb-1">ПОЛЕЗНЫЕ УТИЛИТЫ</div>
+                <h1 class="font-display text-2xl sm:text-3xl font-extrabold text-white">Инструменты и быстрые ссылки для игрока</h1>
             </div>
 
-        </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                
+                <!-- КАЛЬКУЛЯТОР КОМИССИИ ROBUX (30%) -->
+                <div class="bg-kitchor-card border border-kitchor-border rounded-xl p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-lg bg-kitchor-gold/15 border border-kitchor-gold/40 flex items-center justify-center text-kitchor-gold">
+                            <i class="fa-solid fa-calculator"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-display font-bold text-lg text-white">Калькулятор налога Robux (30%)</h3>
+                            <p class="text-xs text-kitchor-muted">Для PLS DONATE, геймпассов и продажи одежды</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mt-5">
+                        <div>
+                            <label class="block text-xs text-gray-300 mb-1.5 font-medium">Цена геймпасса / доната (в Robux):</label>
+                            <input type="number" id="robux-input-price" value="100" min="1" oninput="calcRobuxFromPrice()"
+                                   class="w-full px-4 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-white font-bold">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3 p-4 rounded-xl bg-[#111317] border border-kitchor-border">
+                            <div>
+                                <div class="text-[11px] text-kitchor-muted">Комиссия Roblox (30%):</div>
+                                <div id="robux-tax-amount" class="text-lg font-bold text-red-400 mt-0.5">-30 R$</div>
+                            </div>
+                            <div>
+                                <div class="text-[11px] text-kitchor-muted">Ты получишь на баланс (70%):</div>
+                                <div id="robux-net-receive" class="text-xl font-extrabold text-kitchor-gold mt-0.5">70 R$</div>
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t border-kitchor-border">
+                            <label class="block text-xs text-gray-300 mb-1.5 font-medium">Хочу получить ровно чистыми (R$):</label>
+                            <div class="flex items-center gap-3">
+                                <input type="number" id="robux-wanted-net" placeholder="Например: 500" oninput="calcRobuxNeeded()"
+                                       class="flex-grow px-4 py-2 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-sm text-white">
+                                <div class="text-xs text-gray-300 shrink-0">
+                                    Ставь цену: <strong id="robux-needed-price" class="text-kitchor-gold text-sm">715 R$</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- БЫСТРЫЕ ОФИЦИАЛЬНЫЕ ССЫЛКИ И СТАТИСТИКА АККАУНТА -->
+                <div class="space-y-6">
+                    <!-- Карточка прогресса использования кодов -->
+                    <div class="bg-kitchor-card border border-kitchor-border rounded-xl p-6">
+                        <h3 class="font-display font-bold text-lg text-white mb-1">Твоя статистика промокодов</h3>
+                        <p class="text-xs text-kitchor-muted mb-4">Отслеживай, сколько кодов из базы ты уже активировал</p>
+                        <div class="grid grid-cols-2 gap-3 p-4 rounded-xl bg-[#111317] border border-kitchor-border mb-4">
+                            <div>
+                                <div class="text-[11px] text-kitchor-muted">Всего в базе:</div>
+                                <div class="text-xl font-extrabold text-white mt-0.5">56 кодов</div>
+                            </div>
+                            <div>
+                                <div class="text-[11px] text-kitchor-muted">Отмечено тобой:</div>
+                                <div id="tools-used-stat" class="text-xl font-extrabold text-kitchor-gold mt-0.5">0</div>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('promos')" class="w-full py-2.5 px-4 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs uppercase tracking-wider transition">
+                            Перейти к активации промокодов
+                        </button>
+                    </div>
+
+                    <!-- Полезные ссылки Roblox -->
+                    <div class="bg-kitchor-card border border-kitchor-border rounded-xl p-6">
+                        <h4 class="font-display font-bold text-sm uppercase tracking-wider text-kitchor-gold mb-3">Официальные страницы Roblox</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                            <a href="https://www.roblox.com/redeem" target="_blank" rel="noopener noreferrer" class="p-3 rounded-lg bg-[#111317] border border-kitchor-border hover:border-kitchor-gold flex items-center justify-between transition">
+                                <span>Активация промокодов</span>
+                                <span class="text-kitchor-gold font-bold">→</span>
+                            </a>
+                            <a href="https://www.roblox.com/games/5306359293/Island-of-Move" target="_blank" rel="noopener noreferrer" class="p-3 rounded-lg bg-[#111317] border border-kitchor-border hover:border-kitchor-gold flex items-center justify-between transition">
+                                <span>Игра Island of Move</span>
+                                <span class="text-kitchor-gold font-bold">→</span>
+                            </a>
+                            <a href="https://www.roblox.com/games/6901029464/Mansion-of-Wonder" target="_blank" rel="noopener noreferrer" class="p-3 rounded-lg bg-[#111317] border border-kitchor-border hover:border-kitchor-gold flex items-center justify-between transition">
+                                <span>Игра Mansion of Wonder</span>
+                                <span class="text-kitchor-gold font-bold">→</span>
+                            </a>
+                            <a href="https://status.roblox.com" target="_blank" rel="noopener noreferrer" class="p-3 rounded-lg bg-[#111317] border border-kitchor-border hover:border-kitchor-gold flex items-center justify-between transition">
+                                <span>Статус серверов Roblox</span>
+                                <span class="text-emerald-400 font-bold">●</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
     </main>
 
-    <!-- Модальное окно Регистрации (Без Google) -->
-    <div id="auth-modal" class="fixed inset-0 bg-black/70 hidden items-center justify-center z-50 p-4">
-        <div class="roblox-card rounded-xl max-w-sm w-full p-6 shadow-2xl relative">
-            <button onclick="toggleAuthModal()" class="absolute top-3 right-4 text-gray-400 hover:text-white text-xl">&times;</button>
-            <h3 class="text-xl font-bold text-white mb-1">Быстрая регистрация</h3>
-            <p class="text-xs text-gray-400 mb-4">Создай локальный аккаунт Rooblox Wiki (без привязки к почте и Google).</p>
+    <!-- НИЖНЯЯ ПАНЕЛЬ НАВИГАЦИИ СО ВКЛАДКАМИ -->
+    <nav class="fixed bottom-0 left-0 right-0 z-50 bg-[#111317]/95 backdrop-blur-lg border-t border-kitchor-border shadow-2xl">
+        <div class="max-w-xl mx-auto grid grid-cols-4 px-2 py-1.5">
+            <button onclick="switchTab('home')" id="bottom-nav-home" class="bottom-tab-btn flex flex-col items-center justify-center py-2 rounded-xl text-kitchor-gold transition">
+                <i class="fa-solid fa-house text-base mb-1"></i>
+                <span class="text-[11px] font-bold">Главная</span>
+            </button>
+            <button onclick="switchTab('promos')" id="bottom-nav-promos" class="bottom-tab-btn flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:text-white transition relative">
+                <i class="fa-solid fa-ticket text-base mb-1"></i>
+                <span class="text-[11px] font-medium">Промокоды</span>
+                <span class="absolute top-1.5 right-5 px-1.5 py-0.2 rounded-full bg-kitchor-gold text-kitchor-dark text-[9px] font-extrabold">56</span>
+            </button>
+            <button onclick="switchTab('chat')" id="bottom-nav-chat" class="bottom-tab-btn flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:text-white transition">
+                <i class="fa-solid fa-comments text-base mb-1"></i>
+                <span class="text-[11px] font-medium">Чат</span>
+            </button>
+            <button onclick="switchTab('tools')" id="bottom-nav-tools" class="bottom-tab-btn flex flex-col items-center justify-center py-2 rounded-xl text-gray-400 hover:text-white transition">
+                <i class="fa-solid fa-screwdriver-wrench text-base mb-1"></i>
+                <span class="text-[11px] font-medium">Полезное</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО: ВОЙТИ / ЗАРЕГИСТРИРОВАТЬСЯ
+         ========================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-kitchor-card border border-kitchor-border rounded-2xl max-w-md w-full overflow-hidden shadow-2xl">
             
-            <div class="space-y-3">
-                <div>
-                    <label class="text-xs text-gray-300 block mb-1">Придумай никнейм (на англ. с цифрами):</label>
-                    <input type="text" id="reg-username" placeholder="Например: Capybara_999" 
-                        class="w-full bg-[#111216] border border-[#2d3139] rounded px-3 py-2 text-sm text-white">
-                </div>
-                <div>
-                    <label class="text-xs text-gray-300 block mb-1">Пароль:</label>
-                    <input type="password" id="reg-password" placeholder="••••••••" 
-                        class="w-full bg-[#111216] border border-[#2d3139] rounded px-3 py-2 text-sm text-white">
-                </div>
-                <div id="auth-error" class="text-red-400 text-xs hidden">Заполни все поля!</div>
-                <button onclick="registerUser()" class="w-full roblox-btn text-white py-2 rounded font-bold text-sm mt-2">
-                    Зарегистрироваться и войти
+            <!-- Переключатель вкладок внутри модалки -->
+            <div class="grid grid-cols-2 border-b border-kitchor-border bg-[#111317]">
+                <button onclick="switchAuthMode('login')" id="modal-tab-login" class="py-3.5 text-xs font-bold uppercase tracking-wider text-kitchor-gold border-b-2 border-kitchor-gold transition">
+                    Войти
                 </button>
+                <button onclick="switchAuthMode('register')" id="modal-tab-register" class="py-3.5 text-xs font-bold uppercase tracking-wider text-gray-400 border-b-2 border-transparent hover:text-white transition">
+                    Зарегистрироваться
+                </button>
+            </div>
+
+            <div class="p-6">
+                <!-- Сообщение об ошибке или успехе -->
+                <div id="auth-alert-box" class="hidden mb-4 p-3 rounded-lg text-xs font-medium"></div>
+
+                <!-- ФОРМА ВХОДА -->
+                <form id="login-form" onsubmit="handleLoginSubmit(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1.5 font-medium">Логин или Никнейм</label>
+                        <input type="text" id="login-username" required placeholder="Введи свой никнейм"
+                               class="w-full px-3.5 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1.5 font-medium">Пароль</label>
+                        <input type="password" id="login-password" required placeholder="••••••••"
+                               class="w-full px-3.5 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-sm text-white">
+                    </div>
+                    <div class="pt-2 flex items-center justify-end gap-2">
+                        <button type="button" onclick="closeAuthModal()" class="px-4 py-2.5 rounded-lg border border-kitchor-border text-xs text-gray-300 hover:text-white">
+                            Отмена
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs uppercase tracking-wider transition">
+                            Войти в аккаунт
+                        </button>
+                    </div>
+                </form>
+
+                <!-- ФОРМА РЕГИСТРАЦИИ -->
+                <form id="register-form" onsubmit="handleRegisterSubmit(event)" class="hidden space-y-4">
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1.5 font-medium">Придумай логин (отображается в чате)</label>
+                        <input type="text" id="reg-username" required minlength="3" maxlength="20" placeholder="Например: ProGamer_RBLX"
+                               class="w-full px-3.5 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1.5 font-medium">Твой ник в самом Roblox (по желанию)</label>
+                        <input type="text" id="reg-roblox" maxlength="25" placeholder="@roblox_username"
+                               class="w-full px-3.5 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-sm text-white">
+                    </div>
+                    <div>
+                        <label class="block text-xs text-gray-300 mb-1.5 font-medium">Пароль (минимум 4 символа)</label>
+                        <input type="password" id="reg-password" required minlength="4" placeholder="••••••••"
+                               class="w-full px-3.5 py-2.5 rounded-lg bg-[#111317] border border-kitchor-border focus:border-kitchor-gold focus:outline-none text-sm text-white">
+                    </div>
+                    <div class="pt-2 flex items-center justify-end gap-2">
+                        <button type="button" onclick="closeAuthModal()" class="px-4 py-2.5 rounded-lg border border-kitchor-border text-xs text-gray-300 hover:text-white">
+                            Отмена
+                        </button>
+                        <button type="submit" class="px-6 py-2.5 rounded-lg bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs uppercase tracking-wider transition">
+                            Зарегистрироваться
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
 
+    <!-- ==========================================
+         МОДАЛЬНОЕ ОКНО: ИНСТРУКЦИЯ КАК ВВОДИТЬ КОДЫ
+         ========================================== -->
+    <div id="guide-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-kitchor-card border border-kitchor-border rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-4">
+            <div class="flex items-center justify-between border-b border-kitchor-border pb-3">
+                <h3 class="font-display font-bold text-lg text-white">Куда вводить промокоды Roblox?</h3>
+                <button onclick="closeGuideModal()" class="text-gray-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <div class="space-y-3 text-xs text-gray-300 leading-relaxed">
+                <div class="p-3.5 rounded-xl bg-[#111317] border border-kitchor-border">
+                    <div class="font-bold text-kitchor-gold mb-1">1. Коды для официального сайта (roblox.com/redeem)</div>
+                    Открой страницу <a href="https://www.roblox.com/redeem" target="_blank" class="underline text-white">roblox.com/redeem</a> в браузере, войди в свой аккаунт Roblox, вставь промокод (например, <code class="text-kitchor-gold">SPIDERCOLA</code>) и нажми кнопку <strong>Redeem</strong>.
+                </div>
+                <div class="p-3.5 rounded-xl bg-[#111317] border border-kitchor-border">
+                    <div class="font-bold text-emerald-400 mb-1">2. Официальные игры-хабы (Island of Move и Mansion of Wonder)</div>
+                    Зайди в сам плейс в Roblox, подойди к стенду <strong>«PLAY IT!» / «Get Swag!»</strong>, нажми кнопку <strong>Redeem Code</strong> и введи код. Предмет навсегда появится в твоём основном гардеробе Roblox!
+                </div>
+                <div class="p-3.5 rounded-xl bg-[#111317] border border-kitchor-border">
+                    <div class="font-bold text-sky-400 mb-1">3. Внутриигровые коды (Blox Fruits, DOORS, MM2 и др.)</div>
+                    Запусти нужную игру в Roblox, найди на экране иконку подарка 🎁, птички Twitter 🐦 или настройки ⚙️ и вставь скопированный код туда.
+                </div>
+            </div>
+            <div class="text-right pt-2">
+                <button onclick="closeGuideModal()" class="px-5 py-2 rounded-lg bg-kitchor-gold text-kitchor-dark font-bold text-xs">Понятно</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ВСПЛЫВАЮЩЕЕ УВЕДОМЛЕНИЕ (TOAST) -->
+    <div id="toast-notification" class="fixed bottom-20 right-4 z-50 hidden items-center gap-2.5 px-4 py-3 rounded-xl bg-[#111317] border border-kitchor-gold text-white text-xs font-semibold shadow-2xl">
+        <i class="fa-solid fa-circle-check text-kitchor-gold text-sm"></i>
+        <span id="toast-text">Скопировано!</span>
+    </div>
+
+    <!-- ==========================================
+         СКРИПТЫ: БАЗА 56 ПРОМОКОДОВ, АВТОРИЗАЦИЯ И ЧАТ
+         ========================================== -->
     <script>
-        // --- 1. БАЗА ПРОМОКОДОВ ROOBLOX WIKI ---
-        const promoCodes = [
-            { code: "FREENGNBOI", reward: "Набор Nguyen Boi (Аватар)", status: "working", where: "Сайт Roblox" },
-            { code: "FREENGNGON", reward: "Набор Nguyen Gon (Аватар)", status: "working", where: "Сайт Roblox" },
-            { code: "SPIDERCOLA", reward: "Питомец на плечо Паук-Кола", status: "working", where: "Сайт Roblox" },
-            { code: "TWEETROBLOX", reward: "Птичка The Bird Says____", status: "working", where: "Сайт Roblox" },
-            { code: "StrikeAPose", reward: "Кепка Hustle Hat", status: "working", where: "Игра: Island of Move" },
-            { code: "SettingTheStage", reward: "Рюкзак Build It Backpack", status: "working", where: "Игра: Island of Move" },
-            { code: "FXArtist", reward: "Рюкзак Художника (Artist Backpack)", status: "working", where: "Игра: Mansion of Wonder" },
-            { code: "ThingsGoBoom", reward: "Пояс Ghastly Aura", status: "working", where: "Игра: Mansion of Wonder" },
-            { code: "100MILSEGUIDORES", reward: "Рюкзак Celebratory Backpack", status: "expired", where: "Сайт Roblox" },
-            { code: "ROBLOXEDU2021", reward: "Клавиатура Dev Deck", status: "expired", where: "Сайт Roblox" }
+        // ==========================================
+        // 1. ОГРОМНАЯ БАЗА ПРОМОКОДОВ (56 КОДОВ)
+        // ==========================================
+        const PROMO_CODES = [
+            // --- ОФИЦИАЛЬНЫЙ САЙТ ROBLOX (roblox.com/redeem) ---
+            {
+                id: 'site-1',
+                code: 'SPIDERCOLA',
+                game: 'Официальный сайт Roblox',
+                whereType: 'site',
+                whereInstruction: 'Вводить на сайте roblox.com/redeem',
+                whereUrl: 'https://www.roblox.com/redeem',
+                reward: 'Питомец на плечо «Паучья Кола» (Spider Cola)',
+                badgeColor: 'gold'
+            },
+            {
+                id: 'site-2',
+                code: 'TWEETROBLOX',
+                game: 'Официальный сайт Roblox',
+                whereType: 'site',
+                whereInstruction: 'Вводить на сайте roblox.com/redeem',
+                whereUrl: 'https://www.roblox.com/redeem',
+                reward: 'Питомец на плечо «Синяя птичка» (The Bird Says____)',
+                badgeColor: 'gold'
+            },
+            {
+                id: 'site-3',
+                code: 'FREENGNBOI',
+                game: 'Официальный сайт Roblox',
+                whereType: 'site',
+                whereInstruction: 'Вводить на сайте roblox.com/redeem',
+                whereUrl: 'https://www.roblox.com/redeem',
+                reward: 'Полный скин-бандл «Nguyen Boi» для аватара',
+                badgeColor: 'gold'
+            },
+            {
+                id: 'site-4',
+                code: 'FREENGNGON',
+                game: 'Официальный сайт Roblox',
+                whereType: 'site',
+                whereInstruction: 'Вводить на сайте roblox.com/redeem',
+                whereUrl: 'https://www.roblox.com/redeem',
+                reward: 'Полный скин-бандл «Nguyen Gon» для аватара',
+                badgeColor: 'gold'
+            },
+
+            // --- ОФИЦИАЛЬНЫЙ ИВЕНТ: ISLAND OF MOVE (Предметы в инвентарь Roblox) ---
+            {
+                id: 'iom-1',
+                code: 'STRIKEAPOSE',
+                game: 'Island of Move (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре Roblox «Island of Move» у стенда PLAY IT!',
+                whereUrl: 'https://www.roblox.com/games/5306359293/Island-of-Move',
+                reward: 'Кепка «Hustle Hat» в основной инвентарь Roblox',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'iom-2',
+                code: 'GETMOVING',
+                game: 'Island of Move (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре Roblox «Island of Move» у стенда PLAY IT!',
+                whereUrl: 'https://www.roblox.com/games/5306359293/Island-of-Move',
+                reward: 'Спортивные очки «Speedy Shades» для аватара',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'iom-3',
+                code: 'SETTINGTHEStage',
+                game: 'Island of Move (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре Roblox «Island of Move» у стенда PLAY IT!',
+                whereUrl: 'https://www.roblox.com/games/5306359293/Island-of-Move',
+                reward: 'Рюкзак «Build It Backpack» для твоего персонажа',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'iom-4',
+                code: 'WORLDALIVE',
+                game: 'Island of Move (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре Roblox «Island of Move» у стенда PLAY IT!',
+                whereUrl: 'https://www.roblox.com/games/5306359293/Island-of-Move',
+                reward: 'Кристальный компаньон на плечо «Crystalline Companion»',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'iom-5',
+                code: 'VICTORYLAP',
+                game: 'Island of Move (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре Roblox «Island of Move» у стенда PLAY IT!',
+                whereUrl: 'https://www.roblox.com/games/5306359293/Island-of-Move',
+                reward: 'Большие наушники «Cardio Cans» для аватара',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'iom-6',
+                code: 'DIY',
+                game: 'Island of Move (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре Roblox «Island of Move» у стенда PLAY IT!',
+                whereUrl: 'https://www.roblox.com/games/5306359293/Island-of-Move',
+                reward: 'Посох на спину «Kinetic Staff» в инвентарь Roblox',
+                badgeColor: 'emerald'
+            },
+
+            // --- ОФИЦИАЛЬНЫЙ ИВЕНТ: MANSION OF WONDER (Предметы в инвентарь Roblox) ---
+            {
+                id: 'mow-1',
+                code: 'GLIMMER',
+                game: 'Mansion of Wonder (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре «Mansion of Wonder» у лисы Swag Booth',
+                whereUrl: 'https://www.roblox.com/games/6901029464/Mansion-of-Wonder',
+                reward: 'Аксессуар на голову «Head Slime» (Слайм)',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'mow-2',
+                code: 'THINGSGOBOOM',
+                game: 'Mansion of Wonder (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре «Mansion of Wonder» у лисы Swag Booth',
+                whereUrl: 'https://www.roblox.com/games/6901029464/Mansion-of-Wonder',
+                reward: 'Фиолетовая аура на пояс «Ghastly Aura»',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'mow-3',
+                code: 'PARTICLEWIZARD',
+                game: 'Mansion of Wonder (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре «Mansion of Wonder» у лисы Swag Booth',
+                whereUrl: 'https://www.roblox.com/games/6901029464/Mansion-of-Wonder',
+                reward: 'Магические наплечники «Tome of the Magus»',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'mow-4',
+                code: 'FXARTIST',
+                game: 'Mansion of Wonder (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре «Mansion of Wonder» у лисы Swag Booth',
+                whereUrl: 'https://www.roblox.com/games/6901029464/Mansion-of-Wonder',
+                reward: 'Рюкзак художника «Artist Backpack»',
+                badgeColor: 'emerald'
+            },
+            {
+                id: 'mow-5',
+                code: 'BOARDWALK',
+                game: 'Mansion of Wonder (Вещи в инвентарь)',
+                whereType: 'roblox-event',
+                whereInstruction: 'Вводить в игре «Mansion of Wonder» у лисы Swag Booth',
+                whereUrl: 'https://www.roblox.com/games/6901029464/Mansion-of-Wonder',
+                reward: 'Огненная аура «Ring of Flames» на пояс',
+                badgeColor: 'emerald'
+            },
+
+            // --- ПОПУЛЯРНАЯ ИГРА: BLOX FRUITS ---
+            {
+                id: 'bf-1',
+                code: 'KITT_RESET',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: 'Бесплатный сброс характеристик (Stat Reset)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-2',
+                code: 'SUB2CAPTAINMAUI',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP Boost)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-3',
+                code: 'SUB2GAMERROBOT_RESET1',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: 'Полный возврат очков статов (Stat Refund)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-4',
+                code: 'SUB2GAMERROBOT_EXP1',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '30 минут двойного опыта (2x EXP Boost)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-5',
+                code: 'SUB2UNCLEKIZARU',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: 'Бесплатный сброс статов персонажа',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-6',
+                code: 'KITTGAMING',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут 2x EXP для быстрой прокачки уровня',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-7',
+                code: 'ENYU_IS_PRO',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-8',
+                code: 'SUB2FER999',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-9',
+                code: 'MAGICBUS',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-10',
+                code: 'JCWK',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-11',
+                code: 'STARCODEHEO',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-12',
+                code: 'BLUXXY',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут ускоренной прокачки 2x EXP',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-13',
+                code: 'THEGREATACE',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-14',
+                code: 'SUB2OFFICIALNOOBIE',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '20 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-15',
+                code: 'STRAWHATMAINE',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: '15 минут двойного опыта (2x EXP)',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-16',
+                code: 'BIGNEWS',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits (во 2-м или 3-м море)',
+                reward: 'Эксклюзивный игровой титул «Big News»',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bf-17',
+                code: 'FUDD10_V2',
+                game: 'Blox Fruits',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blox Fruits → Иконка подарка слева',
+                reward: 'Мгновенный бонус +2 Beli на счёт',
+                badgeColor: 'sky'
+            },
+
+            // --- ПОПУЛЯРНАЯ ИГРА: DOORS ---
+            {
+                id: 'doors-1',
+                code: 'SCREECHSUCKS',
+                game: 'DOORS',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры DOORS → Магазин (Shop) в лобби',
+                reward: '25 бесплатных ручек (Knobs)',
+                badgeColor: 'purple'
+            },
+            {
+                id: 'doors-2',
+                code: '5B',
+                game: 'DOORS',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры DOORS → Магазин (Shop) в лобби',
+                reward: '105 ручек (Knobs) и 1 бесплатное возрождение (Revive)',
+                badgeColor: 'purple'
+            },
+            {
+                id: 'doors-3',
+                code: 'THEHUNT',
+                game: 'DOORS',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры DOORS → Магазин (Shop) в лобби',
+                reward: '1 бесплатное возрождение (Revive) для забега',
+                badgeColor: 'purple'
+            },
+            {
+                id: 'doors-4',
+                code: '4B',
+                game: 'DOORS',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры DOORS → Магазин (Shop) в лобби',
+                reward: 'Бонусные ручки (Knobs) и звёздная пыль',
+                badgeColor: 'purple'
+            },
+
+            // --- ПОПУЛЯРНАЯ ИГРА: BEE SWARM SIMULATOR ---
+            {
+                id: 'bss-1',
+                code: '38217',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки (шестерёнка) → Promo Codes',
+                reward: '5 билетов (Tickets) для покупки редких пчёл',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-2',
+                code: 'ClubBean',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes (нужно быть в группе игры)',
+                reward: 'Магический боб (Magic Bean) + 2x буст ананасового поля',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-3',
+                code: 'Wax',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes',
+                reward: '5 билетов (Tickets) и 5 000 мёда (Honey)',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-4',
+                code: 'BopMaster',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes',
+                reward: '5 бесплатных билетов (Tickets)',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-5',
+                code: 'Connoisseur',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes',
+                reward: '5 бесплатных билетов (Tickets)',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-6',
+                code: 'Crawlers',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes',
+                reward: '5 бесплатных билетов (Tickets)',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-7',
+                code: 'Roof',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes',
+                reward: '5 бесплатных билетов (Tickets)',
+                badgeColor: 'amber'
+            },
+            {
+                id: 'bss-8',
+                code: 'Nectar',
+                game: 'Bee Swarm Simulator',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Bee Swarm Simulator → Настройки → Promo Codes',
+                reward: '5 000 мёда (Honey) на старт',
+                badgeColor: 'amber'
+            },
+
+            // --- ПОПУЛЯРНАЯ ИГРА: BLADE BALL ---
+            {
+                id: 'bb-1',
+                code: 'BPTEAMS',
+                game: 'Blade Ball',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blade Ball → Кнопка Extra (сверху слева) → Codes',
+                reward: '100 ракушек (Shells) и бесплатный спин колеса',
+                badgeColor: 'rose'
+            },
+            {
+                id: 'bb-2',
+                code: 'REBIRTHLTM',
+                game: 'Blade Ball',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blade Ball → Кнопка Extra → Codes',
+                reward: '1 бесплатный билет возрождения (Rebirth Ticket)',
+                badgeColor: 'rose'
+            },
+            {
+                id: 'bb-3',
+                code: 'DRAGONNEWYEAR',
+                game: 'Blade Ball',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blade Ball → Кнопка Extra → Codes',
+                reward: 'Бесплатные новогодние спины (Spins)',
+                badgeColor: 'rose'
+            },
+            {
+                id: 'bb-4',
+                code: 'SENTINELSREVENGE',
+                game: 'Blade Ball',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры Blade Ball → Кнопка Extra → Codes',
+                reward: 'Скин на меч или бесплатная крутка колеса',
+                badgeColor: 'rose'
+            },
+
+            // --- ПОПУЛЯРНАЯ ИГРА: MURDER MYSTERY 2 (MM2) & DRESS TO IMPRESS ---
+            {
+                id: 'mm2-1',
+                code: 'COMB4T2',
+                game: 'Murder Mystery 2 (MM2)',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри игры MM2 → Инвентарь (Inventory) → Поле Enter Code внизу справа',
+                reward: 'Эксклюзивный нож «Combat II» в инвентарь MM2',
+                badgeColor: 'purple'
+            },
+            {
+                id: 'dti-1',
+                code: 'LANATUTU',
+                game: 'Dress To Impress (DTI)',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Dress To Impress → Иконка сумочки с кодами слева',
+                reward: 'Белое пышное платье «Lana Tutu» для подиума',
+                badgeColor: 'rose'
+            },
+            {
+                id: 'dti-2',
+                code: 'M0T0PRINCESSWAV',
+                game: 'Dress To Impress (DTI)',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Dress To Impress → Иконка сумочки с кодами слева',
+                reward: 'Золотая корона принцессы (Crown)',
+                badgeColor: 'rose'
+            },
+            {
+                id: 'dti-3',
+                code: 'BELALASLAY',
+                game: 'Dress To Impress (DTI)',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Dress To Impress → Иконка сумочки с кодами слева',
+                reward: 'Стильная куртка для показов мод',
+                badgeColor: 'rose'
+            },
+            {
+                id: 'dti-4',
+                code: 'FASHION',
+                game: 'Dress To Impress (DTI)',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Dress To Impress → Иконка сумочки с кодами слева',
+                reward: 'Чёрно-белое вечернее платье',
+                badgeColor: 'rose'
+            },
+
+            // --- ПОПУЛЯРНАЯ ИГРА: BROOKHAVEN RP (ID МУЗЫКИ И СЕКРЕТЫ) ---
+            {
+                id: 'bh-1',
+                code: '1848354536',
+                game: 'Brookhaven RP',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Brookhaven RP → Автомобиль или Дом → Музыкальный плеер (ID)',
+                reward: 'Рабочий музыкальный трек «Relaxed Scene» для машины',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bh-2',
+                code: '9043887091',
+                game: 'Brookhaven RP',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Brookhaven RP → Автомобиль или Дом → Музыкальный плеер (ID)',
+                reward: 'Популярный фонк/бит «Lo-Fi Chill Beat»',
+                badgeColor: 'sky'
+            },
+            {
+                id: 'bh-3',
+                code: '1837879082',
+                game: 'Brookhaven RP',
+                whereType: 'ingame',
+                whereInstruction: 'Внутри Brookhaven RP → Автомобиль или Дом → Музыкальный плеер (ID)',
+                reward: 'Трек для вечеринок «Paradise Falls»',
+                badgeColor: 'sky'
+            }
         ];
 
-        function renderCodes(filter = 'all') {
-            const container = document.getElementById('codes-container');
-            container.innerHTML = '';
+        // Состояние фильтрации и использованных кодов
+        let activeGameFilter = 'Все';
+        let usedCodes = JSON.parse(localStorage.getItem('rblxor_used_codes') || '[]');
 
-            promoCodes.forEach(item => {
-                if (filter !== 'all' && item.status !== filter) return;
+        // Состояние авторизации и чата (БЕЗ БОТОВ!)
+        let currentUser = JSON.parse(localStorage.getItem('rblxor_current_user') || 'null');
+        let activeChatChannel = 'general';
+        const chatBroadcast = typeof BroadcastChannel !== 'undefined' ? new BroadcastChannel('rblxor_live_chat') : null;
 
-                const isWorking = item.status === 'working';
-                const badge = isWorking 
-                    ? `<span class="bg-green-900/60 text-green-300 border border-green-600 text-xs px-2 py-0.5 rounded">✓ Рабочий (Rooblox Wiki)</span>`
-                    : `<span class="bg-red-900/60 text-red-300 border border-red-600 text-xs px-2 py-0.5 rounded">✕ Истёк</span>`;
+        const CHANNEL_NAMES = {
+            general: 'Общий чат',
+            teammates: 'Поиск тиммейтов',
+            trades: 'Обмен / Трейды',
+            promos: 'Новые промокоды'
+        };
 
-                container.innerHTML += `
-                    <div class="bg-[#111216] border border-[#2d3139] p-4 rounded-lg flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-                        <div>
-                            <div class="flex items-center gap-2 mb-1">
-                                <span class="font-mono font-bold text-lg text-white tracking-wider">${item.code}</span>
-                                ${badge}
-                            </div>
-                            <p class="text-sm text-gray-300">${item.reward}</p>
-                            <span class="text-xs text-gray-500">Где вводить: ${item.where}</span>
-                        </div>
-                        <button onclick="copyCode('${item.code}')" class="bg-[#252830] hover:bg-[#2d3139] text-gray-200 border border-[#3e434f] px-3 py-1.5 rounded text-xs font-medium shrink-0 transition">
-                            📋 Скопировать
-                        </button>
-                    </div>
-                `;
-            });
-        }
+        // ==========================================
+        // 2. ПЕРЕКЛЮЧЕНИЕ ВКЛАДОК
+        // ==========================================
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-section').forEach(sec => sec.classList.remove('active'));
+            const target = document.getElementById('tab-' + tabId);
+            if (target) target.classList.add('active');
 
-        function filterCodes(type) { renderCodes(type); }
-        function copyCode(code) {
-            navigator.clipboard.writeText(code);
-            alert(`Промокод ${code} скопирован в буфер обмена!`);
-        }
-
-        // --- 2. РЕАЛЬНЫЙ ПОИСК ПРОФИЛЯ ROBLOX ---
-        async function searchRobloxUser() {
-            const usernameInput = document.getElementById('roblox-username').value.trim();
-            const btn = document.getElementById('search-btn');
-            const resultBox = document.getElementById('profile-result');
-            const errorBox = document.getElementById('profile-error');
-
-            if (!usernameInput) return;
-
-            btn.innerText = "Загрузка...";
-            btn.disabled = true;
-            resultBox.classList.add('hidden');
-            errorBox.classList.add('hidden');
-
-            try {
-                // Используем публичный зеркальный прокси RoProxy для обхода браузерных ограничений CORS
-                const userRes = await fetch(`https://users.roproxy.com/v1/users/search?keyword=${encodeURIComponent(usernameInput)}&limit=10`);
-                const userData = await userRes.json();
-
-                if (!userData.data || userData.data.length === 0) {
-                    throw new Error("Игрок с таким ником не найден в базе Roblox.");
+            // Обновляем нижнее меню
+            const tabs = ['home', 'promos', 'chat', 'tools'];
+            tabs.forEach(t => {
+                const bottomBtn = document.getElementById('bottom-nav-' + t);
+                const topBtn = document.getElementById('top-nav-' + t);
+                if (bottomBtn) {
+                    if (t === tabId) {
+                        bottomBtn.classList.add('text-kitchor-gold');
+                        bottomBtn.classList.remove('text-gray-400');
+                    } else {
+                        bottomBtn.classList.remove('text-kitchor-gold');
+                        bottomBtn.classList.add('text-gray-400');
+                    }
                 }
-
-                // Ищем точное совпадение или берем первого
-                const exactUser = userData.data.find(u => u.name.toLowerCase() === usernameInput.toLowerCase()) || userData.data[0];
-                const userId = exactUser.id;
-
-                // Получаем реальную аватарку через API миниатюр
-                const thumbRes = await fetch(`https://thumbnails.roproxy.com/v1/users/avatar-headshot?userIds=${userId}&size=150x150&format=Png&isCircular=false`);
-                const thumbData = await thumbRes.json();
-                const avatarUrl = thumbData.data[0].imageUrl;
-
-                // Отображаем на сайте
-                document.getElementById('profile-avatar').src = avatarUrl;
-                document.getElementById('profile-displayname').innerText = exactUser.displayName;
-                document.getElementById('profile-username').innerText = `@${exactUser.name}`;
-                document.getElementById('profile-id').innerText = `ID аккаунта: ${userId}`;
-                
-                resultBox.classList.remove('hidden');
-            } catch (err) {
-                errorBox.innerText = "Ошибка: не удалось найти игрока или сервер временно недоступен. Попробуй точный ник (например: Roblox).";
-                errorBox.classList.remove('hidden');
-            } finally {
-                btn.innerText = "Найти";
-                btn.disabled = false;
-            }
-        }
-
-        // --- 3. АРХИВНЫЕ («МЁРТВЫЕ») КОММЕНТАРИИ И РЕАКЦИИ ---
-        let commentsData = [
-            {
-                id: 1,
-                user: "Capybara_8821",
-                date: "3 года назад • Архив",
-                text: "Ребята, код SPIDERCOLA реально работает!! Мне дали паука на плечо, спасибо Rooblox Wiki!",
-                reactions: { "👍": 42, "🔥": 15, "😂": 3, "💀": 8 },
-                userReacted: {}
-            },
-            {
-                id: 2,
-                user: "Popka_2014",
-                date: "2 года назад • Архив",
-                text: "А почему у меня код на рюкзак не вводится на сайте?? Пишет invalid code, помогите пж((",
-                reactions: { "👍": 5, "🔥": 1, "😂": 19, "💀": 24 },
-                userReacted: {}
-            },
-            {
-                id: 3,
-                user: "Ninja_4049",
-                date: "2 года назад • Архив",
-                text: "@Popka_2014 потому что читай внимательнее, там написано что его надо вводить внутри игры Island of Move, а не на сайте.",
-                reactions: { "👍": 31, "🔥": 12, "😂": 0, "💀": 4 },
-                userReacted: {}
-            },
-            {
-                id: 4,
-                user: "MegaCapybara_007",
-                date: "1 год назад • Архив",
-                text: "Кто-нибудь ещё сидит на этом форуме? Все комментарии мёртвые... Добавьте новые коды на робуксы!",
-                reactions: { "👍": 11, "🔥": 2, "😂": 8, "💀": 56 },
-                userReacted: {}
-            },
-            {
-                id: 5,
-                user: "ShadowTiger_991",
-                date: "8 месяцев назад • Архив",
-                text: "Кодов на бесплатные робуксы не существует, только на вещи для скина. Но поиск по нику тут крутой, мою аватарку сразу нашёл.",
-                reactions: { "👍": 18, "🔥": 9, "😂": 1, "💀": 2 },
-                userReacted: {}
-            },
-            {
-                id: 6,
-                user: "Popka_Pro_777",
-                date: "5 месяцев назад • Архив",
-                text: "Забрал обе куртки Nguyen, топовый репозиторий, добавил в закладки.",
-                reactions: { "👍": 9, "🔥": 6, "😂": 2, "💀": 1 },
-                userReacted: {}
-            }
-        ];
-
-        function renderComments() {
-            const list = document.getElementById('comments-list');
-            document.getElementById('comments-count').innerText = commentsData.length;
-            list.innerHTML = '';
-
-            commentsData.forEach(c => {
-                let reactionsHtml = '';
-                for (const [emoji, count] of Object.entries(c.reactions)) {
-                    const isActive = c.userReacted[emoji] ? 'active' : '';
-                    reactionsHtml += `
-                        <button onclick="toggleReaction(${c.id}, '${emoji}')" 
-                            class="reaction-btn ${isActive} bg-[#1c1e24] border border-[#2d3139] hover:border-gray-500 px-2.5 py-1 rounded-full text-xs flex items-center gap-1 transition">
-                            <span>${emoji}</span> <span class="font-bold">${count}</span>
-                        </button>
-                    `;
+                if (topBtn) {
+                    if (t === tabId) {
+                        topBtn.classList.add('text-kitchor-gold');
+                    } else {
+                        topBtn.classList.remove('text-kitchor-gold');
+                    }
                 }
-
-                list.innerHTML += `
-                    <div class="bg-[#111216] border border-[#2d3139] p-4 rounded-lg">
-                        <div class="flex justify-between items-center mb-2">
-                            <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-purple-600 to-blue-500 flex items-center justify-center font-bold text-xs text-white">
-                                    ${c.user.charAt(0)}
-                                </div>
-                                <span class="font-bold text-sm text-blue-400">${c.user}</span>
-                            </div>
-                            <span class="text-xs text-gray-500">${c.date}</span>
-                        </div>
-                        <p class="text-sm text-gray-200 mb-3">${c.text}</p>
-                        <div class="flex flex-wrap gap-2">
-                            ${reactionsHtml}
-                        </div>
-                    </div>
-                `;
             });
-        }
 
-        function toggleReaction(commentId, emoji) {
-            const comment = commentsData.find(c => c.id === commentId);
-            if (!comment) return;
+            window.scrollTo({ top: 0, behavior: 'smooth' });
 
-            if (comment.userReacted[emoji]) {
-                comment.reactions[emoji]--;
-                comment.userReacted[emoji] = false;
-            } else {
-                comment.reactions[emoji]++;
-                comment.userReacted[emoji] = true;
+            if (tabId === 'chat') {
+                renderChatMessages();
             }
-            renderComments();
         }
 
-        // --- 4. ПРОСТАЯ РЕГИСТРАЦИЯ И ДОБАВЛЕНИЕ КОММЕНТАРИЕВ ---
-        let currentUser = localStorage.getItem('rooblox_wiki_user') || null;
-
-        function updateAuthUI() {
-            const authSection = document.getElementById('auth-section');
-            const warning = document.getElementById('comment-auth-warning');
-            const form = document.getElementById('comment-form');
-
-            if (currentUser) {
-                authSection.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <span class="text-sm text-green-400 font-bold">👤 ${currentUser}</span>
-                        <button onclick="logoutUser()" class="text-xs bg-red-900/50 hover:bg-red-800 text-red-200 px-2.5 py-1 rounded border border-red-700">Выйти</button>
-                    </div>
-                `;
-                warning.classList.add('hidden');
-                form.classList.remove('hidden');
+        function openCategoryFromHome(categoryKey) {
+            if (categoryKey === 'official') {
+                document.getElementById('promo-where-filter').value = 'site';
+                activeGameFilter = 'Все';
             } else {
-                authSection.innerHTML = `
-                    <button onclick="toggleAuthModal()" class="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded font-medium text-sm transition">
-                        Регистрация / Вход
+                document.getElementById('promo-where-filter').value = 'all';
+                activeGameFilter = categoryKey;
+            }
+            renderGameFilterChips();
+            renderPromoCodes();
+            switchTab('promos');
+        }
+
+        // ==========================================
+        // 3. РЕНДЕР ПРОМОКОДОВ И ФИЛЬТРОВ ИГР
+        // ==========================================
+        function renderGameFilterChips() {
+            const container = document.getElementById('game-filter-chips');
+            const uniqueGames = ['Все', ...new Set(PROMO_CODES.map(item => item.game))];
+
+            container.innerHTML = uniqueGames.map(game => {
+                const isActive = activeGameFilter === game;
+                const count = game === 'Все' ? PROMO_CODES.length : PROMO_CODES.filter(c => c.game === game).length;
+                return `
+                    <button onclick="selectGameFilter('${game.replace(/'/g, "\\'")}')"
+                            class="px-3 py-1.5 rounded-lg text-xs font-semibold transition flex items-center gap-1.5 border ${
+                                isActive 
+                                ? 'bg-kitchor-gold text-kitchor-dark border-kitchor-gold shadow' 
+                                : 'bg-[#111317] text-gray-300 border-kitchor-border hover:border-kitchor-gold/60'
+                            }">
+                        <span>${game}</span>
+                        <span class="px-1.5 py-0.2 rounded text-[10px] ${isActive ? 'bg-black/20 text-kitchor-dark' : 'bg-white/5 text-gray-400'}">${count}</span>
                     </button>
                 `;
-                warning.classList.remove('hidden');
-                form.classList.add('hidden');
-            }
+            }).join('');
         }
 
-        function toggleAuthModal() {
-            const modal = document.getElementById('auth-modal');
-            modal.classList.toggle('hidden');
-            modal.classList.toggle('flex');
+        function selectGameFilter(gameName) {
+            activeGameFilter = gameName;
+            renderGameFilterChips();
+            renderPromoCodes();
         }
 
-        function registerUser() {
-            const user = document.getElementById('reg-username').value.trim();
-            const pass = document.getElementById('reg-password').value.trim();
-            const err = document.getElementById('auth-error');
+        function resetPromoFilters() {
+            activeGameFilter = 'Все';
+            document.getElementById('promo-search').value = '';
+            document.getElementById('promo-where-filter').value = 'all';
+            document.getElementById('hide-used-checkbox').checked = false;
+            renderGameFilterChips();
+            renderPromoCodes();
+        }
 
-            if (!user || !pass) {
-                err.classList.remove('hidden');
+        function renderPromoCodes() {
+            const searchVal = (document.getElementById('promo-search').value || '').trim().toLowerCase();
+            const whereVal = document.getElementById('promo-where-filter').value;
+            const hideUsed = document.getElementById('hide-used-checkbox').checked;
+
+            document.getElementById('used-count-badge').textContent = usedCodes.length;
+            const toolsUsedEl = document.getElementById('tools-used-stat');
+            if (toolsUsedEl) toolsUsedEl.textContent = usedCodes.length + ' кодов';
+
+            const filtered = PROMO_CODES.filter(item => {
+                if (activeGameFilter !== 'Все' && item.game !== activeGameFilter) return false;
+                if (whereVal !== 'all' && item.whereType !== whereVal) return false;
+                if (hideUsed && usedCodes.includes(item.id)) return false;
+                if (searchVal) {
+                    const matchCode = item.code.toLowerCase().includes(searchVal);
+                    const matchGame = item.game.toLowerCase().includes(searchVal);
+                    const matchReward = item.reward.toLowerCase().includes(searchVal);
+                    if (!matchCode && !matchGame && !matchReward) return false;
+                }
+                return true;
+            });
+
+            document.getElementById('shown-promo-count').textContent = filtered.length;
+            const grid = document.getElementById('promo-cards-grid');
+
+            if (filtered.length === 0) {
+                grid.innerHTML = `
+                    <div class="col-span-full py-12 text-center bg-kitchor-card border border-kitchor-border rounded-xl p-6">
+                        <i class="fa-solid fa-magnifying-glass text-2xl text-kitchor-gold mb-2"></i>
+                        <div class="text-sm font-bold text-white">Промокоды по вашему запросу не найдены</div>
+                        <p class="text-xs text-kitchor-muted mt-1 mb-4">Попробуйте сбросить фильтры или выбрать другую игру.</p>
+                        <button onclick="resetPromoFilters()" class="px-4 py-2 rounded-lg bg-kitchor-gold text-kitchor-dark font-bold text-xs">Показать все коды</button>
+                    </div>
+                `;
                 return;
             }
 
-            err.classList.add('hidden');
-            currentUser = user;
-            localStorage.setItem('rooblox_wiki_user', user);
-            toggleAuthModal();
-            updateAuthUI();
+            grid.innerHTML = filtered.map(item => {
+                const isUsed = usedCodes.includes(item.id);
+                const whereBadge = item.whereType === 'site' 
+                    ? `<span class="px-2 py-0.5 rounded bg-kitchor-gold/15 border border-kitchor-gold/40 text-kitchor-gold text-[10px] font-bold">🌐 Сайт Roblox</span>`
+                    : item.whereType === 'roblox-event'
+                    ? `<span class="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">🎁 Вещь в инвентарь</span>`
+                    : `<span class="px-2 py-0.5 rounded bg-sky-500/15 border border-sky-500/40 text-sky-300 text-[10px] font-bold">🎮 Внутри режима</span>`;
+
+                return `
+                    <div class="rounded-xl bg-kitchor-card border ${isUsed ? 'border-white/10 opacity-60' : 'border-kitchor-border hover:border-kitchor-gold/60'} p-5 flex flex-col justify-between transition">
+                        <div>
+                            <!-- Верхняя строка: Игра и Тип -->
+                            <div class="flex items-center justify-between gap-2 mb-3">
+                                <span class="text-xs font-bold text-white truncate">${item.game}</span>
+                                ${whereBadge}
+                            </div>
+
+                            <!-- Поле с самим промокодом -->
+                            <div class="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-[#111317] border border-kitchor-border mb-3">
+                                <code class="font-mono font-extrabold text-sm sm:text-base text-kitchor-gold tracking-wide select-all truncate">${item.code}</code>
+                                <button onclick="copyPromoCode('${item.code}')" class="px-3 py-1.5 rounded bg-kitchor-gold hover:bg-kitchor-goldHover text-kitchor-dark font-bold text-xs transition flex items-center gap-1.5 shrink-0">
+                                    <i class="fa-regular fa-copy"></i>
+                                    <span>Копировать</span>
+                                </button>
+                            </div>
+
+                            <!-- Описание награды -->
+                            <div class="text-xs text-gray-200 font-medium leading-relaxed mb-3">
+                                <i class="fa-solid fa-gift text-kitchor-gold mr-1"></i> ${item.reward}
+                            </div>
+                        </div>
+
+                        <!-- Нижняя часть: Где вводить и отметка об использовании -->
+                        <div class="pt-3 border-t border-white/5 space-y-2.5">
+                            <div class="text-[11px] text-kitchor-muted flex items-start gap-1.5">
+                                <i class="fa-solid fa-location-dot text-kitchor-gold mt-0.5"></i>
+                                <span>${item.whereInstruction}</span>
+                            </div>
+                            <div class="flex items-center justify-between pt-1">
+                                <button onclick="toggleUsedCode('${item.id}')" class="text-[11px] font-medium flex items-center gap-1.5 ${isUsed ? 'text-emerald-400' : 'text-gray-400 hover:text-white'} transition">
+                                    <i class="fa-${isUsed ? 'solid fa-square-check' : 'regular fa-square'}"></i>
+                                    <span>${isUsed ? 'Уже активирован' : 'Отметить использованным'}</span>
+                                </button>
+                                ${item.whereUrl ? `
+                                    <a href="${item.whereUrl}" target="_blank" rel="noopener noreferrer" class="text-[11px] text-kitchor-gold hover:underline flex items-center gap-1">
+                                        <span>Открыть</span>
+                                        <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+                                    </a>
+                                ` : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
-        function logoutUser() {
-            currentUser = null;
-            localStorage.removeItem('rooblox_wiki_user');
-            updateAuthUI();
+        function copyPromoCode(codeText) {
+            const tempInput = document.createElement('textarea');
+            tempInput.value = codeText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            showToast(`Промокод ${codeText} скопирован!`);
         }
 
-        function addComment() {
-            const textInput = document.getElementById('new-comment-text');
-            const text = textInput.value.trim();
-            if (!text || !currentUser) return;
-
-            commentsData.unshift({
-                id: Date.now(),
-                user: currentUser,
-                date: "Только что",
-                text: text,
-                reactions: { "👍": 1, "🔥": 0, "😂": 0, "💀": 0 },
-                userReacted: { "👍": true }
-            });
-
-            textInput.value = '';
-            renderComments();
+        function toggleUsedCode(id) {
+            if (usedCodes.includes(id)) {
+                usedCodes = usedCodes.filter(item => item !== id);
+            } else {
+                usedCodes.push(id);
+            }
+            localStorage.setItem('rblxor_used_codes', JSON.stringify(usedCodes));
+            renderPromoCodes();
         }
 
-        // --- 5. ЛОГИКА БОТА-ПОМОЩНИКА ---
-        function askHelper(questionId) {
-            const helperText = document.getElementById('helper-text');
-            if (questionId === 1) {
-                helperText.innerText = "Коды с пометкой «Сайт Roblox» нужно вводить на официальной странице roblox.com/promocodes. А коды для Island of Move или Mansion of Wonder вводятся прямо внутри этих плейсов в Роблоксе!";
-            } else if (questionId === 2) {
-                helperText.innerText = "Поиск подключён к настоящим серверам Roblox через API. Просто напиши любой существующий ник (например, свой), и сайт покажет твою текущую аватарку и ID!";
-            } else if (questionId === 3) {
-                helperText.innerText = "Старые комментарии остались в репозитории с прошлых лет. Но ты можешь зарегистрироваться за 5 секунд и написать свой свежий комментарий или поставить реакции!";
+        // ==========================================
+        // 4. РЕГИСТРАЦИЯ И ВХОД В АККАУНТ
+        // ==========================================
+        function openAuthModal(mode = 'login') {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            switchAuthMode(mode);
+        }
+
+        function closeAuthModal() {
+            const modal = document.getElementById('auth-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            hideAuthAlert();
+        }
+
+        function switchAuthMode(mode) {
+            const loginForm = document.getElementById('login-form');
+            const regForm = document.getElementById('register-form');
+            const tabLogin = document.getElementById('modal-tab-login');
+            const tabReg = document.getElementById('modal-tab-register');
+            hideAuthAlert();
+
+            if (mode === 'login') {
+                loginForm.classList.remove('hidden');
+                regForm.classList.add('hidden');
+                tabLogin.classList.add('text-kitchor-gold', 'border-kitchor-gold');
+                tabLogin.classList.remove('text-gray-400', 'border-transparent');
+                tabReg.classList.remove('text-kitchor-gold', 'border-kitchor-gold');
+                tabReg.classList.add('text-gray-400', 'border-transparent');
+            } else {
+                loginForm.classList.add('hidden');
+                regForm.classList.remove('hidden');
+                tabReg.classList.add('text-kitchor-gold', 'border-kitchor-gold');
+                tabReg.classList.remove('text-gray-400', 'border-transparent');
+                tabLogin.classList.remove('text-kitchor-gold', 'border-kitchor-gold');
+                tabLogin.classList.add('text-gray-400', 'border-transparent');
             }
         }
 
-        // Инициализация при запуске
-        renderCodes();
-        renderComments();
-        updateAuthUI();
+        function showAuthAlert(msg, isError = true) {
+            const box = document.getElementById('auth-alert-box');
+            box.textContent = msg;
+            box.className = `mb-4 p-3 rounded-lg text-xs font-medium ${
+                isError 
+                ? 'bg-red-500/15 border border-red-500/40 text-red-300' 
+                : 'bg-emerald-500/15 border border-emerald-500/40 text-emerald-300'
+            }`;
+            box.classList.remove('hidden');
+        }
+
+        function hideAuthAlert() {
+            document.getElementById('auth-alert-box').classList.add('hidden');
+        }
+
+        function getRegisteredUsers() {
+            return JSON.parse(localStorage.getItem('rblxor_users_db') || '[]');
+        }
+
+        function saveRegisteredUsers(users) {
+            localStorage.setItem('rblxor_users_db', JSON.stringify(users));
+        }
+
+        function handleRegisterSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('reg-username').value.trim();
+            let robloxNick = document.getElementById('reg-roblox').value.trim();
+            const password = document.getElementById('reg-password').value;
+
+            if (!username || username.length < 3) {
+                showAuthAlert('Логин должен содержать минимум 3 символа.');
+                return;
+            }
+
+            const users = getRegisteredUsers();
+            const exists = users.find(u => u.username.toLowerCase() === username.toLowerCase());
+            if (exists) {
+                showAuthAlert('Пользователь с таким логином уже зарегистрирован. Нажмите «Войти».');
+                return;
+            }
+
+            if (!robloxNick) {
+                robloxNick = '@' + username.toLowerCase();
+            } else if (!robloxNick.startsWith('@')) {
+                robloxNick = '@' + robloxNick;
+            }
+
+            const newUser = {
+                id: 'usr_' + Date.now(),
+                username,
+                robloxNick,
+                password,
+                createdAt: new Date().toISOString()
+            };
+
+            users.push(newUser);
+            saveRegisteredUsers(users);
+
+            currentUser = {
+                id: newUser.id,
+                username: newUser.username,
+                robloxNick: newUser.robloxNick
+            };
+            localStorage.setItem('rblxor_current_user', JSON.stringify(currentUser));
+
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`Добро пожаловать, ${currentUser.username}!`);
+        }
+
+        function handleLoginSubmit(e) {
+            e.preventDefault();
+            const username = document.getElementById('login-username').value.trim();
+            const password = document.getElementById('login-password').value;
+
+            const users = getRegisteredUsers();
+            const matched = users.find(
+                u => u.username.toLowerCase() === username.toLowerCase() && u.password === password
+            );
+
+            if (!matched) {
+                showAuthAlert('Неверный логин или пароль. Если у вас ещё нет аккаунта, перейдите во вкладку «Зарегистрироваться».');
+                return;
+            }
+
+            currentUser = {
+                id: matched.id,
+                username: matched.username,
+                robloxNick: matched.robloxNick
+            };
+            localStorage.setItem('rblxor_current_user', JSON.stringify(currentUser));
+
+            updateAuthUI();
+            closeAuthModal();
+            showToast(`С возвращением, ${currentUser.username}!`);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('rblxor_current_user');
+            updateAuthUI();
+            showToast('Вы вышли из аккаунта');
+        }
+
+        function updateAuthUI() {
+            const headerGuest = document.getElementById('auth-header-guest');
+            const headerUser = document.getElementById('auth-header-user');
+            const sidebarGuest = document.getElementById('chat-sidebar-guest');
+            const sidebarUser = document.getElementById('chat-sidebar-user');
+            const inputGuest = document.getElementById('chat-input-guest');
+            const inputForm = document.getElementById('chat-input-form');
+
+            if (currentUser) {
+                const firstLetter = currentUser.username.charAt(0).toUpperCase();
+                headerGuest.classList.add('hidden');
+                headerUser.classList.remove('hidden');
+                headerUser.classList.add('flex');
+
+                document.getElementById('header-user-avatar').textContent = firstLetter;
+                document.getElementById('header-user-name').textContent = currentUser.username;
+                document.getElementById('header-user-roblox').textContent = currentUser.robloxNick;
+
+                sidebarGuest.classList.add('hidden');
+                sidebarUser.classList.remove('hidden');
+                document.getElementById('chat-user-avatar').textContent = firstLetter;
+                document.getElementById('chat-user-name').textContent = currentUser.username;
+                document.getElementById('chat-user-roblox').textContent = 'Roblox: ' + currentUser.robloxNick;
+
+                inputGuest.classList.add('hidden');
+                inputForm.classList.remove('hidden');
+            } else {
+                headerGuest.classList.remove('hidden');
+                headerUser.classList.add('hidden');
+                headerUser.classList.remove('flex');
+
+                sidebarGuest.classList.remove('hidden');
+                sidebarUser.classList.add('hidden');
+
+                inputGuest.classList.remove('hidden');
+                inputForm.classList.add('hidden');
+            }
+
+            renderChatMessages();
+        }
+
+        // ==========================================
+        // 5. ЖИВОЙ ЧАТ РЕАЛЬНЫХ ПОЛЬЗОВАТЕЛЕЙ (БЕЗ БОТОВ)
+        // ==========================================
+        function getChatMessages() {
+            return JSON.parse(localStorage.getItem('rblxor_chat_messages') || '[]');
+        }
+
+        function saveChatMessages(messages) {
+            localStorage.setItem('rblxor_chat_messages', JSON.stringify(messages));
+        }
+
+        function selectChatChannel(channelKey) {
+            activeChatChannel = channelKey;
+            document.getElementById('active-channel-title').textContent = CHANNEL_NAMES[channelKey] || 'Чат';
+
+            document.querySelectorAll('.chat-channel-btn').forEach(btn => {
+                if (btn.getAttribute('data-channel') === channelKey) {
+                    btn.className = 'chat-channel-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg bg-kitchor-gold text-kitchor-dark font-bold text-xs transition';
+                } else {
+                    btn.className = 'chat-channel-btn w-full flex items-center justify-between px-3.5 py-2.5 rounded-lg hover:bg-white/5 text-gray-300 font-medium text-xs transition';
+                }
+            });
+
+            renderChatMessages();
+        }
+
+        function sendChatMessage(e) {
+            e.preventDefault();
+            if (!currentUser) {
+                openAuthModal('login');
+                return;
+            }
+
+            const input = document.getElementById('chat-message-input');
+            const text = input.value.trim();
+            if (!text) return;
+
+            const newMsg = {
+                id: 'msg_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6),
+                channel: activeChatChannel,
+                userId: currentUser.id,
+                username: currentUser.username,
+                robloxNick: currentUser.robloxNick,
+                text: text,
+                timestamp: new Date().toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
+            };
+
+            const messages = getChatMessages();
+            messages.push(newMsg);
+            saveChatMessages(messages);
+
+            if (chatBroadcast) {
+                chatBroadcast.postMessage({ type: 'NEW_MESSAGE', payload: newMsg });
+            }
+
+            input.value = '';
+            renderChatMessages();
+        }
+
+        function deleteOwnMessage(msgId) {
+            if (!currentUser) return;
+            let messages = getChatMessages();
+            messages = messages.filter(m => !(m.id === msgId && m.userId === currentUser.id));
+            saveChatMessages(messages);
+            if (chatBroadcast) {
+                chatBroadcast.postMessage({ type: 'SYNC' });
+            }
+            renderChatMessages();
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return ({
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                })[m];
+            });
+        }
+
+        function renderChatMessages() {
+            const container = document.getElementById('chat-messages-container');
+            const allMessages = getChatMessages();
+            const channelMessages = allMessages.filter(m => m.channel === activeChatChannel);
+
+            document.getElementById('chat-messages-count').textContent = `${channelMessages.length} сообщ.`;
+
+            if (channelMessages.length === 0) {
+                container.innerHTML = `
+                    <div class="h-full flex flex-col items-center justify-center text-center p-6 text-kitchor-muted">
+                        <div class="w-12 h-12 rounded-full bg-white/5 border border-kitchor-border flex items-center justify-center text-kitchor-gold text-lg mb-3">
+                            <i class="fa-regular fa-comments"></i>
+                        </div>
+                        <div class="text-sm font-bold text-white mb-1">В канале «${CHANNEL_NAMES[activeChatChannel]}» пока нет сообщений</div>
+                        <p class="text-xs max-w-sm">
+                            Здесь нет ботов и искусственных сообщений. Зарегистрируйся или войди в аккаунт, чтобы написать первым!
+                        </p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = channelMessages.map(msg => {
+                const isMe = currentUser && currentUser.id === msg.userId;
+                const initial = (msg.username || 'U').charAt(0).toUpperCase();
+
+                return `
+                    <div class="flex items-start gap-3 ${isMe ? 'flex-row-reverse' : ''}">
+                        <div class="w-8 h-8 rounded-lg ${isMe ? 'bg-kitchor-gold text-kitchor-dark' : 'bg-[#111317] border border-kitchor-border text-kitchor-gold'} font-bold text-xs flex items-center justify-center shrink-0">
+                            ${escapeHtml(initial)}
+                        </div>
+                        <div class="max-w-[80%] ${isMe ? 'items-end' : 'items-start'} flex flex-col">
+                            <div class="flex items-center gap-2 mb-1 text-[11px]">
+                                <span class="font-bold text-white">${escapeHtml(msg.username)}</span>
+                                <span class="text-kitchor-gold">${escapeHtml(msg.robloxNick || '')}</span>
+                                <span class="text-gray-500">${escapeHtml(msg.timestamp)}</span>
+                                ${isMe ? `<button onclick="deleteOwnMessage('${msg.id}')" title="Удалить сообщение" class="text-gray-500 hover:text-red-400 transition ml-1"><i class="fa-regular fa-trash-can"></i></button>` : ''}
+                            </div>
+                            <div class="px-3.5 py-2.5 rounded-xl text-xs sm:text-sm leading-relaxed ${
+                                isMe 
+                                ? 'bg-kitchor-gold text-kitchor-dark font-medium rounded-tr-none' 
+                                : 'bg-[#111317] border border-kitchor-border text-gray-200 rounded-tl-none'
+                            }">
+                                ${escapeHtml(msg.text)}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            container.scrollTop = container.scrollHeight;
+        }
+
+        if (chatBroadcast) {
+            chatBroadcast.onmessage = () => {
+                renderChatMessages();
+            };
+        }
+
+        // ==========================================
+        // 6. КАЛЬКУЛЯТОР ROBUX И МОДАЛКИ
+        // ==========================================
+        function calcRobuxFromPrice() {
+            const price = parseInt(document.getElementById('robux-input-price').value) || 0;
+            const net = Math.floor(price * 0.7);
+            const tax = price - net;
+            document.getElementById('robux-tax-amount').textContent = `-${tax} R$`;
+            document.getElementById('robux-net-receive').textContent = `${net} R$`;
+        }
+
+        function calcRobuxNeeded() {
+            const wanted = parseInt(document.getElementById('robux-wanted-net').value) || 0;
+            const needed = wanted > 0 ? Math.ceil(wanted / 0.7) : 0;
+            document.getElementById('robux-needed-price').textContent = `${needed} R$`;
+        }
+
+        function openGuideModal() {
+            const modal = document.getElementById('guide-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+
+        function closeGuideModal() {
+            const modal = document.getElementById('guide-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-text').textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            clearTimeout(window._toastTimer);
+            window._toastTimer = setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 2600);
+        }
+
+        // Инициализация при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('top-promo-count').textContent = PROMO_CODES.length;
+            document.getElementById('home-stat-codes').textContent = PROMO_CODES.length;
+            renderGameFilterChips();
+            renderPromoCodes();
+            updateAuthUI();
+            calcRobuxFromPrice();
+        });
     </script>
 </body>
 </html>
+```
